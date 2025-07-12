@@ -249,11 +249,11 @@
 
         .blog-entrance-container {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 16px;
-            padding: 2rem;
+            border-radius: 12px;
+            padding: 1.5rem;
             text-align: center;
             color: white;
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.2);
+            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.15);
             position: relative;
             overflow: hidden;
         }
@@ -270,28 +270,28 @@
         }
 
         .blog-entrance h2 {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            margin: 0 0 1rem 0;
+            margin: 0 0 0.75rem 0;
             text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .blog-entrance p {
-            font-size: 1.1rem;
-            margin: 0 0 1.5rem 0;
+            font-size: 1rem;
+            margin: 0 0 1.25rem 0;
             opacity: 0.9;
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
         .blog-entrance-btn {
             display: inline-block;
-            padding: 0.875rem 2rem;
+            padding: 0.75rem 1.75rem;
             background: rgba(255, 255, 255, 0.2);
             color: white;
             text-decoration: none;
             border-radius: 50px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
             border: 2px solid rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(10px);
@@ -312,27 +312,8 @@
 
         @media (max-width: 768px) {
             .blog-entrance-container {
-                padding: 1.5rem;
-                margin: 0 0.5rem;
-            }
-
-            .blog-entrance h2 {
-                font-size: 1.5rem;
-            }
-
-            .blog-entrance p {
-                font-size: 1rem;
-            }
-
-            .blog-entrance-btn {
-                padding: 0.75rem 1.5rem;
-                font-size: 0.95rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .blog-entrance-container {
                 padding: 1.25rem;
+                margin: 0 0.5rem;
             }
 
             .blog-entrance h2 {
@@ -341,7 +322,26 @@
 
             .blog-entrance p {
                 font-size: 0.95rem;
-                margin-bottom: 1.25rem;
+            }
+
+            .blog-entrance-btn {
+                padding: 0.65rem 1.25rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .blog-entrance-container {
+                padding: 1rem;
+            }
+
+            .blog-entrance h2 {
+                font-size: 1.2rem;
+            }
+
+            .blog-entrance p {
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
             }
         }
 
@@ -629,10 +629,9 @@
         <!-- 第四代博客入口 -->
         <section class="blog-entrance">
             <div class="blog-entrance-container">
-                <h2>🚀 第四代博客</h2>
-                <p>体验全新的博客系统，更快的加载速度，更好的用户体验</p>
+                <p>全新博客系统，更快更好的体验</p>
                 <a href="https://blog.szhaovo.cn" target="_blank" class="blog-entrance-btn">
-                    访问第四代博客 →
+                    访问第四代博客
                 </a>
             </div>
         </section>
