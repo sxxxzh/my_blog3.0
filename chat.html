@@ -628,9 +628,31 @@
                 `;
                 
                 setTimeout(() => phoneSection.classList.add('active'), 10);
-                
+                const iframeContainer = phoneSection.querySelector('.iframe-container');
+                const chatIframeEl = document.getElementById('chatIframe');
+                const useVV = !!window.visualViewport;
+                const updateViewport = () => {
+                    const h = useVV ? Math.round(window.visualViewport.height) : window.innerHeight;
+                    phoneSection.style.height = h + 'px';
+                    iframeContainer.style.height = h + 'px';
+                    chatIframeEl.style.height = h + 'px';
+                };
+                updateViewport();
+                if (useVV) {
+                    window.visualViewport.addEventListener('resize', updateViewport);
+                    window.visualViewport.addEventListener('scroll', updateViewport);
+                } else {
+                    window.addEventListener('resize', updateViewport);
+                }
+
                 document.getElementById('closePhone').addEventListener('click', () => {
                     phoneSection.classList.remove('active');
+                    if (useVV) {
+                        window.visualViewport.removeEventListener('resize', updateViewport);
+                        window.visualViewport.removeEventListener('scroll', updateViewport);
+                    } else {
+                        window.removeEventListener('resize', updateViewport);
+                    }
                     setTimeout(() => {
                         document.querySelector('.page-header').style.display = 'block';
                         document.getElementById('buttonContainer').style.display = 'grid';
