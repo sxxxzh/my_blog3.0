@@ -267,6 +267,7 @@
             z-index: 1000;
             opacity: 0;
             transition: opacity 0.2s ease;
+            overflow: hidden;
         }
         
         .phone-section.active { 
@@ -633,11 +634,17 @@
                 const useVV = !!window.visualViewport;
                 const updateViewport = () => {
                     const h = useVV ? Math.round(window.visualViewport.height) : window.innerHeight;
+                    const top = useVV ? Math.round(window.visualViewport.offsetTop) : 0;
+                    const left = useVV ? Math.round(window.visualViewport.offsetLeft) : 0;
                     phoneSection.style.height = h + 'px';
+                    phoneSection.style.top = top + 'px';
+                    phoneSection.style.left = left + 'px';
                     iframeContainer.style.height = h + 'px';
                     chatIframeEl.style.height = h + 'px';
                 };
                 updateViewport();
+                document.documentElement.style.overflow = 'hidden';
+                document.body.style.overflow = 'hidden';
                 if (useVV) {
                     window.visualViewport.addEventListener('resize', updateViewport);
                     window.visualViewport.addEventListener('scroll', updateViewport);
@@ -653,6 +660,8 @@
                     } else {
                         window.removeEventListener('resize', updateViewport);
                     }
+                    document.documentElement.style.overflow = '';
+                    document.body.style.overflow = '';
                     setTimeout(() => {
                         document.querySelector('.page-header').style.display = 'block';
                         document.getElementById('buttonContainer').style.display = 'grid';
