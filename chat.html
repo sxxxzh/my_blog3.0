@@ -257,12 +257,9 @@
         .phone-section { 
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            height: 100svh;
+            inset: 0;
             height: 100dvh;
+            min-height: 100svh;
             background: #fff;
             z-index: 1000;
             opacity: 0;
@@ -628,49 +625,11 @@
                 `;
                 
                 setTimeout(() => phoneSection.classList.add('active'), 10);
-                const iframeContainer = phoneSection.querySelector('.iframe-container');
-                const chatIframeEl = document.getElementById('chatIframe');
-                const useVV = !!window.visualViewport;
-                const updateViewport = () => {
-                    const vv = useVV ? window.visualViewport : null;
-                    const baseH = window.innerHeight;
-                    const baseW = window.innerWidth;
-                    let h = baseH;
-                    let w = baseW;
-                    let top = 0;
-                    let left = 0;
-                    if (useVV) {
-                        const kbOpen = (baseH - vv.height) > 80;
-                        h = kbOpen ? Math.round(vv.height) : baseH;
-                        w = Math.round(vv.width);
-                        top = kbOpen ? Math.round(vv.offsetTop) : 0;
-                        left = Math.round(vv.offsetLeft);
-                    }
-                    phoneSection.style.height = h + 'px';
-                    phoneSection.style.width = w + 'px';
-                    phoneSection.style.top = top + 'px';
-                    phoneSection.style.left = left + 'px';
-                    iframeContainer.style.height = h + 'px';
-                    chatIframeEl.style.height = h + 'px';
-                };
-                updateViewport();
                 document.documentElement.style.overflow = 'hidden';
                 document.body.style.overflow = 'hidden';
-                if (useVV) {
-                    window.visualViewport.addEventListener('resize', updateViewport);
-                    window.visualViewport.addEventListener('scroll', updateViewport);
-                } else {
-                    window.addEventListener('resize', updateViewport);
-                }
 
                 document.getElementById('closePhone').addEventListener('click', () => {
                     phoneSection.classList.remove('active');
-                    if (useVV) {
-                        window.visualViewport.removeEventListener('resize', updateViewport);
-                        window.visualViewport.removeEventListener('scroll', updateViewport);
-                    } else {
-                        window.removeEventListener('resize', updateViewport);
-                    }
                     document.documentElement.style.overflow = '';
                     document.body.style.overflow = '';
                     setTimeout(() => {
