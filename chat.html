@@ -11,13 +11,26 @@
     <script src="/js/common.js"></script>
     <style>
         .main-content { max-width: 900px; margin: 6rem auto 2rem; padding: 0 16px; }
-        .version-wrapper { display: flex; flex-direction: column; gap: 16px; }
-        .title { font-size: 20px; font-weight: 600; color: #333; }
-        .version-card { background: #fff; border: 1px solid #e9ecef; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.06); padding: 20px; }
-        .version-title { font-size: 18px; font-weight: 600; color: #222; margin-bottom: 8px; }
-        .release-notes { font-size: 14px; color: #555; margin-top: 8px; white-space: pre-wrap; }
+        .chat-options { display: flex; flex-direction: column; gap: 24px; }
+        .title { font-size: 24px; font-weight: 600; color: #333; text-align: center; margin-bottom: 32px; }
+        .option-card { background: #fff; border: 1px solid #e9ecef; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.06); padding: 24px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .option-card:hover { transform: translateY(-2px); box-shadow: 0 8px 12px rgba(0,0,0,0.1); }
+        .option-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+        .option-icon { width: 48px; height: 48px; background: #f0f2f5; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .option-title { font-size: 20px; font-weight: 600; color: #222; }
+        .option-description { font-size: 14px; color: #555; margin-bottom: 20px; line-height: 1.5; }
+        .option-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+        .btn { display: inline-block; text-decoration: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; font-size: 14px; transition: all 0.2s ease; border: 1px solid transparent; cursor: pointer; }
+        .btn-primary { background: #1890ff; color: #fff; border-color: #0f6bdc; }
+        .btn-primary:hover { background: #0f6bdc; }
+        .btn-outline { background: transparent; color: #1890ff; border-color: #1890ff; }
+        .btn-outline:hover { background: #1890ff; color: #fff; }
+        .version-info { background: #f8f9fa; border-radius: 8px; padding: 16px; margin-top: 16px; }
+        .version-title { font-size: 16px; font-weight: 600; color: #222; margin-bottom: 8px; }
+        .release-notes { font-size: 13px; color: #555; margin-top: 8px; white-space: pre-wrap; }
         .meta { font-size: 12px; color: #777; margin-top: 8px; }
-        .download-btn { display: inline-block; background: #1890ff; color: #fff; text-decoration: none; padding: 10px 16px; border-radius: 8px; border: 1px solid #0f6bdc; font-weight: 600; }
+        .loading { text-align: center; color: #777; font-size: 14px; }
+        .error { text-align: center; color: #ff4d4f; font-size: 14px; }
     </style>
     </head>
 <body>
@@ -44,9 +57,40 @@
     </nav>
 
     <main class="main-content">
-        <div class="version-wrapper">
-            <div class="title">新的聊天功能已移植安卓版本</div>
-            <div id="versionBox" class="version-card">正在获取最新版本...</div>
+        <div class="chat-options">
+            <h1 class="title">选择聊天方式</h1>
+            
+            <div class="option-card">
+                <div class="option-header">
+                    <div class="option-icon">📱</div>
+                    <div class="option-title">安卓版本</div>
+                </div>
+                <div class="option-description">
+                    下载安卓应用，享受原生应用的流畅体验。支持离线消息、推送通知等功能。
+                </div>
+                <div class="option-buttons">
+                    <a href="#" class="btn btn-primary" id="downloadApk">下载 APK</a>
+                </div>
+                <div id="androidVersion" class="version-info" style="display: none;">
+                    <div class="version-title">正在获取最新版本...</div>
+                </div>
+            </div>
+
+            <div class="option-card">
+                <div class="option-header">
+                    <div class="option-icon">🌐</div>
+                    <div class="option-title">Web 端</div>
+                </div>
+                <div class="option-description">
+                    无需下载，直接通过浏览器访问。支持多端同步，随时随地畅聊。
+                </div>
+                <div class="option-buttons">
+                    <button class="btn btn-primary" id="openWebChat" disabled>请先登录</button>
+                </div>
+                <div id="webChatStatus" class="version-info" style="display: none;">
+                    <div class="meta">检测到登录状态，可以打开Web聊天</div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -63,25 +107,92 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const box = document.getElementById('versionBox');
+            // 获取安卓版本信息
+            const androidVersionEl = document.getElementById('androidVersion');
+            const downloadApkBtn = document.getElementById('downloadApk');
+            
             try {
                 const res = await fetch('https://android.szhaovo.cn/api/versions/latest', { cache: 'no-store' });
                 const j = await res.json();
                 if (j && j.data) {
                     const d = j.data;
                     const sizeMB = d.file_size ? (d.file_size / 1024 / 1024).toFixed(2) : '';
-                    box.innerHTML = `
+                    androidVersionEl.innerHTML = `
                         <div class="version-title">最新版本 ${d.version_name} (${d.version_code})</div>
-                        <a class="download-btn" href="${d.apk_url}" target="_blank" rel="noopener noreferrer">下载 APK</a>
                         <div class="release-notes">${d.release_notes || ''}</div>
                         <div class="meta">${sizeMB ? `大小 ${sizeMB} MB · ` : ''}目标SDK ${d.target_sdk_version}</div>
                     `;
+                    androidVersionEl.style.display = 'block';
+                    downloadApkBtn.href = d.apk_url;
+                    downloadApkBtn.target = '_blank';
+                    downloadApkBtn.rel = 'noopener noreferrer';
                 } else {
-                    box.textContent = '未获取到版本信息';
+                    androidVersionEl.innerHTML = '<div class="error">未获取到版本信息</div>';
+                    androidVersionEl.style.display = 'block';
                 }
             } catch (e) {
-                box.textContent = '获取版本信息失败';
+                androidVersionEl.innerHTML = '<div class="error">获取版本信息失败</div>';
+                androidVersionEl.style.display = 'block';
             }
+
+            // Web端聊天功能
+            const openWebChatBtn = document.getElementById('openWebChat');
+            const webChatStatus = document.getElementById('webChatStatus');
+            
+            // 获取本地token的函数
+            function getLocalToken() {
+                // 尝试从localStorage获取token
+                const token = localStorage.getItem('token') || 
+                             localStorage.getItem('authToken') || 
+                             localStorage.getItem('userToken');
+                
+                if (token) {
+                    return token;
+                }
+                
+                // 尝试从sessionStorage获取token
+                const sessionToken = sessionStorage.getItem('token') || 
+                                   sessionStorage.getItem('authToken') || 
+                                   sessionStorage.getItem('userToken');
+                
+                return sessionToken || '';
+            }
+
+            // 检查token并更新UI状态
+            function checkTokenAndUpdateUI() {
+                const token = getLocalToken();
+                
+                if (token) {
+                    // 有token，启用按钮
+                    openWebChatBtn.disabled = false;
+                    openWebChatBtn.textContent = '打开 Web 聊天';
+                    webChatStatus.style.display = 'block';
+                } else {
+                    // 无token，禁用按钮
+                    openWebChatBtn.disabled = true;
+                    openWebChatBtn.textContent = '请先登录';
+                    webChatStatus.style.display = 'none';
+                }
+                
+                return token;
+            }
+
+            // 初始检查token状态
+            checkTokenAndUpdateUI();
+
+            openWebChatBtn.addEventListener('click', () => {
+                const token = checkTokenAndUpdateUI();
+                const baseUrl = 'https://newebchat.pages.dev/';
+                
+                if (token) {
+                    // 有token时才允许跳转
+                    const url = `${baseUrl}?token=${encodeURIComponent(token)}`;
+                    window.open(url, '_blank');
+                }
+            });
+
+            // 定期检查token状态（可选）
+            setInterval(checkTokenAndUpdateUI, 5000); // 每5秒检查一次
         });
     </script>
 </body>
