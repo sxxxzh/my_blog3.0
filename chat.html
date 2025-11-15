@@ -530,7 +530,7 @@
                     </svg>
                 </div>
                 <div class="card-title">在线预览</div>
-                <div class="card-description">无需下载，即可在浏览器中体验聊天功能</div>
+                <div class="card-description">无需下载，登录后即可在浏览器中体验聊天功能</div>
                 <button class="card-button" id="previewBtn">开始预览</button>
                 <div class="version-info">
                     <div class="version-title">Web 版本 v2.1.0</div>
@@ -645,6 +645,8 @@
                 
                 if (!token) {
                     iframeLoading.style.display = 'none';
+                    iframeError.style.display = 'block';
+                    iframeError.textContent = '请先登录以启用Web聊天';
                     return;
                 }
                 
@@ -668,6 +670,7 @@
             previewBtn.addEventListener('click', () => {
                 const token = getLocalToken();
                 if (!token) {
+                    alert('请先登录后再使用预览功能');
                     return;
                 }
                 createPhoneModel(token);
@@ -677,7 +680,13 @@
             function updatePreviewButton() {
                 const token = getLocalToken();
                 const previewBtn = document.getElementById('previewBtn');
-                previewBtn.disabled = !token;
+                if (!token) {
+                    previewBtn.textContent = '请先登录';
+                    previewBtn.style.opacity = '0.7';
+                } else {
+                    previewBtn.textContent = '开始预览';
+                    previewBtn.style.opacity = '1';
+                }
             }
 
             updatePreviewButton();
