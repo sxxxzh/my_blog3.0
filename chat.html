@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>聊天 - 个人博客</title>
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
     <link rel="icon" type="image/png" href="images/favicon.png">
@@ -261,6 +261,8 @@
             left: 0;
             width: 100vw;
             height: 100vh;
+            height: 100svh;
+            height: 100dvh;
             background: #fff;
             z-index: 1000;
             opacity: 0;
@@ -300,11 +302,13 @@
             width: 100%;
             height: 100%;
             background: #fff;
+            padding-bottom: env(safe-area-inset-bottom);
         }
         
         .chat-iframe { 
             width: 100%;
             height: 100%;
+            height: calc(100% - env(safe-area-inset-bottom));
             border: none;
             display: block;
         }
