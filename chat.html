@@ -633,10 +633,19 @@
                 const useVV = !!window.visualViewport;
                 const updateViewport = () => {
                     const vv = useVV ? window.visualViewport : null;
-                    const h = useVV ? Math.round(vv.height) : window.innerHeight;
-                    const w = useVV ? Math.round(vv.width) : window.innerWidth;
-                    const top = useVV ? Math.round(vv.offsetTop) : 0;
-                    const left = useVV ? Math.round(vv.offsetLeft) : 0;
+                    const baseH = window.innerHeight;
+                    const baseW = window.innerWidth;
+                    let h = baseH;
+                    let w = baseW;
+                    let top = 0;
+                    let left = 0;
+                    if (useVV) {
+                        const kbOpen = (baseH - vv.height) > 80;
+                        h = kbOpen ? Math.round(vv.height) : baseH;
+                        w = Math.round(vv.width);
+                        top = kbOpen ? Math.round(vv.offsetTop) : 0;
+                        left = Math.round(vv.offsetLeft);
+                    }
                     phoneSection.style.height = h + 'px';
                     phoneSection.style.width = w + 'px';
                     phoneSection.style.top = top + 'px';
