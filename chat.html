@@ -2,7 +2,8 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=overlays-content">
+    <title>聊天 - 个人博客</title>
     <title>聊天 - 个人博客</title>
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
     <link rel="icon" type="image/png" href="images/favicon.png">
@@ -253,96 +254,6 @@
             color: #ff4444;
         }
         
-        /* 全屏预览样式 */
-        .phone-section { 
-            display: none;
-            position: fixed;
-            inset: 0;
-            height: 100dvh;
-            min-height: 0svh;
-            background: #fff;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            overflow: hidden;
-            overscroll-behavior: contain;
-        }
-        
-        .phone-section.active { 
-            display: block;
-            opacity: 1;
-        }
-        
-        .phone-close { 
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: #f5f5f5;
-            color: #1a1a1a;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 1001;
-            transition: all 0.2s ease;
-            font-size: 18px;
-        }
-        
-        .phone-close:hover { 
-            background: #e8e8e8;
-            transform: scale(1.05);
-        }
-        
-        .iframe-container { 
-            width: 100%;
-            height: 100%;
-            background: #fff;
-        }
-        
-        .chat-iframe { 
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-        
-        .iframe-loading, .iframe-error { 
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            font-size: 14px;
-        }
-        
-        .iframe-loading {
-            color: #999;
-        }
-        
-        .iframe-loading::before {
-            content: '';
-            display: block;
-            width: 32px;
-            height: 32px;
-            margin: 0 auto 12px;
-            border: 2px solid #f0f0f0;
-            border-top: 2px solid #1a1a1a;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .iframe-error { 
-            color: #ff4444;
-        }
-        
         /* 响应式设计 - 平板 */
         @media (max-width: 768px) {
             .main-content { 
@@ -543,9 +454,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- 全屏预览区域 -->
-        <div id="phoneSection" class="phone-section" style="display: none;"></div>
     </main>
 
     <footer class="footer">
@@ -608,69 +516,7 @@
                        sessionStorage.getItem('userToken') || '';
             }
 
-            // 创建全屏预览
-            function createPhoneModel(token) {
-                document.querySelector('.page-header').style.display = 'none';
-                document.getElementById('buttonContainer').style.display = 'none';
-                const phoneSection = document.getElementById('phoneSection');
-                phoneSection.style.display = 'block';
-                
-                phoneSection.innerHTML = `
-                    <button class="phone-close" id="closePhone">✕</button>
-                    <div class="iframe-container">
-                        <div id="iframeLoading" class="iframe-loading">正在加载聊天界面</div>
-                        <div id="iframeError" class="iframe-error" style="display: none;">加载失败</div>
-                        <iframe id="chatIframe" class="chat-iframe" style="display: none;"></iframe>
-                    </div>
-                `;
-                
-                setTimeout(() => phoneSection.classList.add('active'), 10);
-                document.documentElement.style.overflow = 'hidden';
-                document.body.style.overflow = 'hidden';
-
-                document.getElementById('closePhone').addEventListener('click', () => {
-                    phoneSection.classList.remove('active');
-                    document.documentElement.style.overflow = '';
-                    document.body.style.overflow = '';
-                    setTimeout(() => {
-                        document.querySelector('.page-header').style.display = 'block';
-                        document.getElementById('buttonContainer').style.display = 'grid';
-                        phoneSection.style.display = 'none';
-                    }, 200);
-                });
-                
-                loadPhonePreview(token);
-            }
-
-            // 加载预览iframe
-            function loadPhonePreview(token) {
-                const chatIframe = document.getElementById('chatIframe');
-                const iframeLoading = document.getElementById('iframeLoading');
-                const iframeError = document.getElementById('iframeError');
-                
-                if (!token) {
-                    iframeLoading.style.display = 'none';
-                    iframeError.style.display = 'block';
-                    iframeError.textContent = '请先登录以启用Web聊天';
-                    return;
-                }
-                
-                const url = `https://newebchat.pages.dev/?token=${encodeURIComponent(token)}`;
-                chatIframe.src = url;
-                
-                chatIframe.onload = () => {
-                    iframeLoading.style.display = 'none';
-                    chatIframe.style.display = 'block';
-                };
-                
-                chatIframe.onerror = () => {
-                    iframeLoading.style.display = 'none';
-                    iframeError.style.display = 'block';
-                    iframeError.textContent = '加载失败，请重试';
-                };
-            }
-
-            // 预览按钮事件
+            // 预览按钮事件 - 改为浏览器自动跳转
             const previewBtn = document.getElementById('previewBtn');
             previewBtn.addEventListener('click', () => {
                 const token = getLocalToken();
@@ -678,7 +524,8 @@
                     alert('请先登录后再使用预览功能');
                     return;
                 }
-                createPhoneModel(token);
+                const url = `https://newebchat.pages.dev/?token=${encodeURIComponent(token)}`;
+                window.open(url, '_blank'); // 浏览器自动跳转，新标签页打开
             });
 
             // 检查登录状态并更新UI
