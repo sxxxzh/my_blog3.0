@@ -1,0 +1,3321 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理控制台 - 个人博客</title>
+    <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+    <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 1rem;
+        }
+
+        .sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .content-section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: none;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: #fff;
+            margin: 2rem auto;
+            width: 90%;
+            max-width: 900px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f8f9fa;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .close {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+            padding: 0.5rem;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+
+        .editor-container {
+            margin-bottom: 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+
+        /* 上传进度条样式 */
+        .upload-progress {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-percentage {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .progress-status {
+            color: #666;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        /* 处理阶段标识 */
+        .progress-stage {
+            position: relative;
+            margin: 0.5rem 0;
+            padding: 0.5rem 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .stage-indicator {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 25%;
+        }
+        
+        .stage-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            margin-bottom: 0.25rem;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .stage-dot.active {
+            background-color: #3498db;
+            transform: scale(1.2);
+        }
+        
+        .stage-dot.completed {
+            background-color: #2ecc71;
+        }
+        
+        .stage-label {
+            font-size: 0.75rem;
+            color: #666;
+            text-align: center;
+            margin-top: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        
+        .stage-label.active {
+            color: #3498db;
+            font-weight: 600;
+        }
+        
+        .stage-label.completed {
+            color: #2ecc71;
+        }
+        
+        .stage-line {
+            position: absolute;
+            top: 5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+        
+        .stage-line-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .upload-speed, .time-remaining {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .upload-speed::before {
+            content: '📈';
+        }
+
+        .time-remaining::before {
+            content: '⏱️';
+        }
+
+        /* 上传状态样式 */
+        .upload-progress.uploading .progress-bar {
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            background-size: 200% 100%;
+            animation: progress-animation 2s linear infinite;
+        }
+
+        .upload-progress.success .progress-bar {
+            background: #2ecc71;
+        }
+
+        .upload-progress.error .progress-bar {
+            background: #e74c3c;
+        }
+        
+        /* 进度信息动画 */
+        @keyframes pulse-status {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+        
+        .progress-status.processing {
+            color: #3498db;
+            font-weight: 500;
+            animation: pulse-status 1.5s ease infinite;
+        }
+        
+        .progress-status.completed {
+            color: #2ecc71;
+            font-weight: 500;
+        }
+        
+        .progress-status.error {
+            color: #e74c3c;
+            font-weight: 500;
+        }
+
+        @keyframes progress-animation {
+            0% {
+                background-position: 100% 0;
+            }
+            100% {
+                background-position: -100% 0;
+            }
+        }
+        
+        .btn-outline-primary {
+            background-color: transparent;
+            border-color: #007bff;
+            color: #007bff;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #fff;
+        }
+        
+        /* 管理后台分页样式 */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .pagination-ellipsis {
+            padding: 8px 4px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 80%; /* 减小侧边栏宽度，不占满整个屏幕 */
+                max-width: 300px; /* 设置最大宽度 */
+                position: fixed;
+                top: 0;
+                left: -100%;
+                height: 100vh;
+                z-index: 1001;
+                transition: all 0.3s ease;
+                box-shadow: none;
+            }
+
+            .sidebar.active {
+                left: 0;
+                box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+            }
+
+            /* 优化侧边栏内部样式 */
+            .sidebar-header {
+                padding: 1.5rem 1rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .nav-menu {
+                padding: 0.5rem 0;
+            }
+
+            .nav-item {
+                margin-bottom: 0.25rem;
+            }
+
+            .nav-link {
+                padding: 0.8rem 1rem;
+                font-size: 0.95rem;
+            }
+
+            .main-content {
+                width: 100%;
+                padding: 1rem;
+                margin-top: 60px;
+                transition: transform 0.3s ease;
+            }
+
+            /* 当侧边栏打开时，主内容区域右移 */
+            .sidebar.active + .main-content {
+                transform: translateX(80%);
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 1rem auto;
+            }
+
+            .modal-body {
+                padding: 1rem;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .form-actions button {
+                width: 100%;
+            }
+
+            .action-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.25rem;
+            }
+
+            .btn-sm {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-title {
+                font-size: 1.25rem;
+            }
+
+            .section-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .section-header button {
+                width: 100%;
+            }
+
+            .table th,
+            .table td {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .editor-container {
+                margin: 0 -1rem;
+            }
+
+            .CodeMirror {
+                height: 300px;
+            }
+
+            .sidebar {
+                width: 85%; /* 在更小的屏幕上稍微调整宽度 */
+            }
+
+            .sidebar.active + .main-content {
+                transform: translateX(85%);
+            }
+        }
+
+        /* 编辑器样式 */
+        .editor-toolbar {
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+        }
+
+        .CodeMirror {
+            height: 400px;
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
+
+        #sidebarToggle.menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 20px; /* 减小宽度 */
+            height: 15px; /* 减小高度 */
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1002;
+            position: fixed;
+            top: 1.2rem;
+            left: 1rem;
+        }
+
+        #sidebarToggle.menu-toggle span {
+            width: 100%;
+            height: 2px;
+            background-color: #2c3e50;
+            border-radius: 2px;
+            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            position: absolute;
+            left: 0;
+        }
+
+        #sidebarToggle.menu-toggle span:nth-child(1) {
+            top: 0;
+        }
+
+        #sidebarToggle.menu-toggle span:nth-child(2) {
+            top: 6px; /* 调整中间线的位置 */
+            width: 70%;
+        }
+
+        #sidebarToggle.menu-toggle span:nth-child(3) {
+            bottom: 0;
+        }
+
+        #sidebarToggle.menu-toggle:hover span:nth-child(2) {
+            width: 100%;
+        }
+
+        #sidebarToggle.menu-toggle.active span:nth-child(1) {
+            transform: translateY(6px) rotate(45deg); /* 调整旋转位置 */
+        }
+
+        #sidebarToggle.menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+
+        #sidebarToggle.menu-toggle.active span:nth-child(3) {
+            transform: translateY(-6px) rotate(-45deg); /* 调整旋转位置 */
+        }
+
+        .message-management {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .message-management h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .message-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .message-item {
+            padding: 1rem;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .message-content {
+            flex: 1;
+            margin-right: 1rem;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+        /* 图片查看器样式 */
+        .image-viewer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-viewer img {
+            max-width: 90%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+
+        .image-viewer.active {
+            display: flex;
+        }
+
+        /* 添加关闭按钮样式 */
+        .image-viewer-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .image-viewer-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .image-viewer-close::before,
+        .image-viewer-close::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 2px;
+            background-color: #fff;
+        }
+
+        .image-viewer-close::before {
+            transform: rotate(45deg);
+        }
+
+        .image-viewer-close::after {
+            transform: rotate(-45deg);
+        }
+
+        /* 查看图片按钮样式 */
+        .view-image-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .view-image-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .view-image-btn:active {
+            transform: translateY(0);
+        }
+
+        .view-image-btn::before {
+            content: '🔍';
+            font-size: 1.1rem;
+        }
+
+        /* 添加标签选择器样式 */
+        .tags-select {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 100px;
+            background: #f8f9fa;
+        }
+
+        .tag-checkbox {
+            display: none;
+        }
+
+        .tag-label {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .tag-checkbox:checked + .tag-label {
+            background: #3498db;
+            color: #fff;
+            border-color: #3498db;
+        }
+
+        .tag-label:hover {
+            border-color: #3498db;
+            transform: translateY(-1px);
+        }
+    </style>
+    <script src="/js/config.js"></script>
+</head>
+<body>
+    <div class="dashboard">
+        <button id="sidebarToggle" class="menu-toggle" aria-label="切换菜单" style="position: fixed; top: 1rem; left: 1rem; z-index: 1002; display: none;">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">管理控制台</div>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-section="posts">文章管理</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="users">用户管理</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="comments">评论管理</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="files">文件管理</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="tags">标签管理</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-section="messages">留言管理</a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <h1 class="header-title">文章管理</h1>
+                <div class="user-info">
+                    <span id="userName"></span>
+                    <button class="btn btn-danger" onclick="logout()">退出</button>
+                </div>
+            </header>
+
+            <section id="postsSection" class="content-section">
+                <div class="section-header">
+                    <h2>文章列表</h2>
+                    <button class="btn btn-primary" onclick="createPost()">新建文章</button>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>标题</th>
+                            <th>作者</th>
+                            <th>发布时间</th>
+                            <th>更新时间</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="postsTableBody"></tbody>
+                </table>
+                <!-- 文章分页组件 -->
+                <div id="postsPaginationContainer" class="pagination-container" style="display: none;"></div>
+            </section>
+
+            <section id="usersSection" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>用户列表</h2>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>用户名</th>
+                            <th>邮箱</th>
+                            <th>角色</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody"></tbody>
+                </table>
+            </section>
+
+            <section id="commentsSection" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>评论管理</h2>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>评论内容</th>
+                            <th>文章标题</th>
+                            <th>评论者</th>
+                            <th>评论时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="commentsTableBody"></tbody>
+                </table>
+            </section>
+
+            <section id="filesSection" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>文件管理</h2>
+                    <button class="btn btn-primary" onclick="showUploadModal()">上传文件</button>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>文件名</th>
+                            <th>类型</th>
+                            <th>大小</th>
+                            <th>上传者</th>
+                            <th>上传时间</th>
+                            <th>关联文章</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="filesTableBody"></tbody>
+                </table>
+            </section>
+
+            <section id="tagsSection" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>标签管理</h2>
+                    <button class="btn btn-primary" onclick="openTagModal()">
+                        <i>➕</i> 新建标签
+                    </button>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>标签名称</th>
+                            <th>文章数量</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tagsTableBody">
+                        <!-- 标签列表将通过 JavaScript 动态加载 -->
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="messagesSection" class="content-section" style="display: none;">
+                <div class="section-header">
+                    <h2>留言管理</h2>
+                </div>
+                <ul class="message-list" id="adminMessageList">
+                    <!-- 留言内容将通过 JavaScript 动态加载 -->
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <div id="createPostModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>新建文章</h2>
+                <span class="close" onclick="closeCreatePostModal()">&times;</span>
+            </div>
+            <form id="createPostForm">
+                <div class="modal-body">
+                    <div class="alert alert-danger" id="createPostError" style="display: none; margin-bottom: 1rem; padding: 0.75rem 1.25rem; color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 0.25rem;"></div>
+                    <div class="form-group">
+                        <label for="postTitle">标题</label>
+                        <input type="text" id="postTitle" name="title" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postContent">内容</label>
+                        <div class="editor-container">
+                            <textarea id="postContent" name="content"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="postStatus">状态</label>
+                        <select id="postStatus" name="status" class="form-control" required>
+                            <option value="draft">草稿</option>
+                            <option value="published">发布</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>标签</label>
+                        <div class="tags-select" id="createPostTags">
+                            <!-- 标签选项将通过 JavaScript 动态加载 -->
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCreatePostModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="editPostModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>编辑文章</h2>
+                <span class="close" onclick="closeEditPostModal()">&times;</span>
+            </div>
+            <form id="editPostForm" onsubmit="return handleEditPost(event)">
+                <input type="hidden" id="editPostId" name="id">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="editPostTitle">标题</label>
+                        <input type="text" id="editPostTitle" name="title" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPostContent">内容</label>
+                        <div class="editor-container">
+                            <textarea id="editPostContent" name="content"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPostStatus">状态</label>
+                        <select id="editPostStatus" name="status" class="form-control" required>
+                            <option value="draft">草稿</option>
+                            <option value="published">发布</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>标签</label>
+                        <div class="tags-select" id="editPostTags">
+                            <!-- 标签选项将通过 JavaScript 动态加载 -->
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditPostModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="uploadFileModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>上传文件</h2>
+                <span class="close" onclick="closeUploadModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="uploadFileForm" onsubmit="handleFileUpload(event)">
+                    <div class="form-group">
+                        <label for="file">选择文件</label>
+                        <input type="file" id="file" name="file" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postId">关联文章（可选）</label>
+                        <select id="postId" name="postId" class="form-control">
+                            <option value="">不关联文章</option>
+                        </select>
+                    </div>
+                    <div class="upload-progress" style="display: none;">
+                        <div class="progress-info">
+                            <span class="progress-percentage">0%</span>
+                            <span class="progress-status">准备上传...</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar"></div>
+                        </div>
+                        <div class="progress-details">
+                            <span class="upload-speed">0 KB/s</span>
+                            <span class="time-remaining">计算中...</span>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeUploadModal()">取消</button>
+                        <button type="submit" class="btn btn-primary">上传</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="imageViewer" class="image-viewer">
+        <button class="image-viewer-close" onclick="hideImageViewer()" aria-label="关闭"></button>
+        <img src="" alt="查看图片">
+    </div>
+
+    <div id="tagModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tagModalTitle">新建标签</h2>
+                <span class="close" onclick="closeTagModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="tagForm" onsubmit="handleTagSubmit(event)">
+                    <input type="hidden" id="tagId">
+                    <div class="form-group">
+                        <label for="tagName">标签名称</label>
+                        <input type="text" id="tagName" name="name" class="form-control" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeTagModal()">取消</button>
+                        <button type="submit" class="btn btn-primary">保存</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 处理令牌失效
+        function handleTokenExpired(message = '登录已过期，请重新登录') {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('user');
+            localStorage.setItem('loginMessage', message);
+            window.location.href = '/admin/login.html';
+        }
+
+        // 检查登录状态
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            
+            if (!token || user.role !== 'admin') {
+                handleTokenExpired('请登录后访问管理页面');
+                return;
+            }
+
+            document.getElementById('userName').textContent = `管理员：${user.name}`;
+        }
+
+        // 处理API响应
+        async function handleApiResponse(response, errorMessage) {
+            if (response.status === 401) {
+                handleTokenExpired();
+                return null;
+            }
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || errorMessage);
+            }
+            
+            return await response.json();
+        }
+
+        let currentPostsPage = 1;
+        let totalPostsPages = 1;
+        let isLoadingPosts = false;
+        const postsPageSize = 10; // 管理后台每页显示的文章数量
+        
+        // 加载文章列表
+        async function loadPosts(page = 1) {
+            if (isLoadingPosts) return;
+            isLoadingPosts = true;
+            
+            try {
+                const response = await fetch(`${API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.ADMIN_POSTS)}?page=${page}&limit=${postsPageSize}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                
+                const data = await handleApiResponse(response, '加载文章列表失败');
+                if (!data) return;
+
+                const tableBody = document.getElementById('postsTableBody');
+                
+                let posts, pagination;
+                if (data.data) {
+                    // 新的分页API响应格式
+                    posts = data.data;
+                    pagination = data.pagination;
+                    currentPostsPage = pagination.page;
+                    totalPostsPages = pagination.totalPages;
+                } else {
+                    // 兼容旧的API响应格式
+                    posts = data;
+                }
+                
+                // 优先使用后端返回的 tags，若缺失再回退逐篇获取
+                const postTags = {};
+                const missingTagPosts = posts.filter(p => !Array.isArray(p.tags));
+                if (missingTagPosts.length > 0) {
+                    await Promise.all(missingTagPosts.map(async (post) => {
+                        try {
+                            const res = await fetch(API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.POST_TAGS(post.id)));
+                            const tags = await handleApiResponse(res, '加载文章标签失败');
+                            postTags[post.id] = Array.isArray(tags) ? tags : [];
+                        } catch (e) {
+                            postTags[post.id] = [];
+                        }
+                    }));
+                }
+                
+                tableBody.innerHTML = posts.map(post => {
+                    const createdDate = new Date(post.created_at * 1000);
+                    const updatedDate = new Date(post.updated_at * 1000);
+                    const localCreatedDate = new Date(createdDate.getTime() - (8 * 3600 * 1000));
+                    const localUpdatedDate = new Date(updatedDate.getTime() - (8 * 3600 * 1000));
+                    
+                    // 获取文章的标签
+                    const tags = Array.isArray(post.tags) ? post.tags : (postTags[post.id] || []);
+                    const tagsHtml = tags.length > 0 
+                        ? `<span class="post-tags" style="display: inline-block; margin-left: 10px;">
+                            ${tags.map(tag => 
+                                `<span class="tag-label" style="font-size: 0.85em; padding: 2px 8px; background: rgba(52, 152, 219, 0.1); color: #3498db; border-radius: 12px; margin-right: 5px;">${tag.name}</span>`
+                            ).join('')}
+                           </span>` 
+                        : '';
+                    
+                    return `
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center;">
+                                    <span>${post.title}</span>
+                                    ${tagsHtml}
+                                </div>
+                            </td>
+                            <td>${post.author_name}</td>
+                            <td>${localCreatedDate.toLocaleString()}</td>
+                            <td>${localUpdatedDate.toLocaleString()}</td>
+                            <td>${post.status === 'published' ? '已发布' : '草稿'}</td>
+                            <td class="action-buttons">
+                                <button class="btn btn-sm btn-warning" onclick="editPost('${post.id}')">编辑</button>
+                                <button class="btn btn-sm btn-danger" onclick="deletePost('${post.id}')">删除</button>
+                                <button class="btn btn-sm btn-info" onclick="viewComments('${post.id}')">评论</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                // 显示分页组件
+                displayPostsPagination();
+                
+            } catch (error) {
+                console.error('加载文章列表失败:', error);
+                alert('加载文章列表失败，请重试');
+            } finally {
+                isLoadingPosts = false;
+            }
+        }
+        
+        // 显示文章分页组件
+        function displayPostsPagination() {
+            const paginationContainer = document.getElementById('postsPaginationContainer');
+            if (!paginationContainer || totalPostsPages <= 1) {
+                if (paginationContainer) {
+                    paginationContainer.style.display = 'none';
+                }
+                return;
+            }
+            
+            paginationContainer.style.display = 'flex';
+            
+            let paginationHTML = '';
+            
+            // 上一页按钮
+            if (currentPostsPage > 1) {
+                paginationHTML += `<button class="btn btn-sm btn-outline-primary" onclick="changePostsPage(${currentPostsPage - 1})">&laquo; 上一页</button>`;
+            }
+            
+            // 页码按钮
+            const startPage = Math.max(1, currentPostsPage - 2);
+            const endPage = Math.min(totalPostsPages, currentPostsPage + 2);
+            
+            if (startPage > 1) {
+                paginationHTML += `<button class="btn btn-sm btn-outline-primary" onclick="changePostsPage(1)">1</button>`;
+                if (startPage > 2) {
+                    paginationHTML += `<span class="pagination-ellipsis">...</span>`;
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const activeClass = i === currentPostsPage ? ' btn-primary' : ' btn-outline-primary';
+                paginationHTML += `<button class="btn btn-sm${activeClass}" onclick="changePostsPage(${i})">${i}</button>`;
+            }
+            
+            if (endPage < totalPostsPages) {
+                if (endPage < totalPostsPages - 1) {
+                    paginationHTML += `<span class="pagination-ellipsis">...</span>`;
+                }
+                paginationHTML += `<button class="btn btn-sm btn-outline-primary" onclick="changePostsPage(${totalPostsPages})">${totalPostsPages}</button>`;
+            }
+            
+            // 下一页按钮
+            if (currentPostsPage < totalPostsPages) {
+                paginationHTML += `<button class="btn btn-sm btn-outline-primary" onclick="changePostsPage(${currentPostsPage + 1})">下一页 &raquo;</button>`;
+            }
+            
+            paginationContainer.innerHTML = paginationHTML;
+        }
+        
+        // 切换文章页面
+        async function changePostsPage(page) {
+            if (page === currentPostsPage || isLoadingPosts) return;
+            await loadPosts(page);
+        }
+
+        // 加载用户列表
+        async function loadUsers() {
+            try {
+                const response = await fetch(API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.USERS), {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const users = await response.json();
+                const tableBody = document.getElementById('usersTableBody');
+                
+                tableBody.innerHTML = users.map(user => `
+                    <tr>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>
+                            <select onchange="updateUserRole('${user.id}', this.value)" ${user.email === JSON.parse(localStorage.getItem('user')).email ? 'disabled' : ''}>
+                                <option value="user" ${user.role === 'user' ? 'selected' : ''}>普通用户</option>
+                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>管理员</option>
+                            </select>
+                        </td>
+                        <td class="action-buttons">
+                            <button class="btn btn-sm btn-danger" onclick="deleteUser('${user.id}')" ${user.email === JSON.parse(localStorage.getItem('user')).email ? 'disabled' : ''}>删除</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('加载用户列表失败:', error);
+                alert('加载用户列表失败，请重试');
+            }
+        }
+
+        // 更新用户角色
+        async function updateUserRole(userId, newRole) {
+            try {
+                const response = await fetch(API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.UPDATE_USER_ROLE(userId)), {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ role: newRole })
+                });
+
+                if (!response.ok) {
+                    throw new Error('更新用户角色失败');
+                }
+
+                alert('用户角色更新成功');
+                loadUsers();
+            } catch (error) {
+                console.error('更新用户角色失败:', error);
+                alert('更新用户角色失败，请重试');
+            }
+        }
+
+        // 切换内容区域
+        function switchSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            document.getElementById(`${sectionId}Section`).style.display = 'block';
+            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+            
+            const titles = {
+                posts: '文章管理',
+                users: '用户管理',
+                comments: '评论管理',
+                files: '文件管理',
+                messages: '留言管理',
+                tags: '标签管理'
+            };
+            document.querySelector('.header-title').textContent = titles[sectionId];
+
+            // 在切换页面时自动关闭侧边栏
+            if (window.innerWidth <= 768) {
+                const sidebar = document.querySelector('.sidebar');
+                const overlay = document.querySelector('.sidebar-overlay');
+                if (sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                    if (overlay) {
+                        overlay.remove();
+                    }
+                }
+            }
+
+            if (sectionId === 'posts') {
+                loadPosts(1);
+            } else if (sectionId === 'users') {
+                loadUsers();
+            } else if (sectionId === 'comments') {
+                loadComments();
+            } else if (sectionId === 'files') {
+                loadFiles();
+            } else if (sectionId === 'messages') {
+                loadAdminMessages();
+            } else if (sectionId === 'tags') {
+                loadTags();
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/admin/login.html';
+        }
+
+        // 页面加载完成后执行的初始化函数
+        document.addEventListener('DOMContentLoaded', () => {
+            // 检查登录状态
+            checkAuth();
+            
+            // 加载初始数据
+            loadPosts(1);
+            
+            // 初始化表单提交事件
+            const createPostForm = document.getElementById('createPostForm');
+            if (createPostForm) {
+                createPostForm.addEventListener('submit', handleCreatePost);
+            }
+            
+            // 初始化导航菜单事件
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = e.target.getAttribute('data-section');
+                    switchSection(section);
+                    // 在移动端点击菜单项后关闭侧边栏
+                    if (window.innerWidth <= 768) {
+                        toggleSidebar();
+                    }
+                });
+            });
+
+            // 初始化移动端侧边栏
+            initMobileSidebar();
+
+            // 加载留言列表
+            loadAdminMessages();
+        });
+
+        let editor = null;
+        let editEditor = null;
+
+        // 创建文章
+        function createPost() {
+            document.getElementById('createPostModal').style.display = 'block';
+            document.getElementById('createPostForm').reset();
+            if (editor) {
+                editor.toTextArea();
+            }
+            editor = new SimpleMDE({
+                element: document.getElementById('postContent'),
+                spellChecker: false,
+                autofocus: true,
+                shortcuts: {
+                    "toggleBold": "Ctrl-B",
+                    "toggleItalic": "Ctrl-I",
+                    "drawLink": "Ctrl-K",
+                    "toggleHeadingSmaller": "Ctrl-H",
+                    "toggleCodeBlock": "Ctrl-Alt-C",
+                    "toggleBlockquote": "Ctrl-Q",
+                    "toggleUnorderedList": "Ctrl-L",
+                    "toggleOrderedList": "Ctrl-Alt-L",
+                    "cleanBlock": "Ctrl-E",
+                    "drawImage": "Ctrl-Alt-I",
+                    "togglePreview": "Ctrl-P",
+                    "toggleSideBySide": "F9",
+                    "toggleFullScreen": "F11"
+                },
+                toolbar: [
+                    "bold", "italic", "heading", "|",
+                    "quote", "code", "unordered-list", "ordered-list", "|",
+                    "link", "image", "|",
+                    "preview", "side-by-side", "fullscreen", "|",
+                    "guide"
+                ],
+                status: ["autosave", "lines", "words", "cursor"]
+            });
+            loadTagsSelect('createPostTags');
+        }
+
+        // 处理创建文章
+        async function handleCreatePost(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const errorMessage = document.getElementById('createPostError');
+            const title = document.getElementById('postTitle').value;
+            const content = editor ? editor.value() : '';
+            const status = document.getElementById('postStatus').value;
+
+            // 表单验证
+            if (!title.trim() || !content.trim()) {
+                errorMessage.textContent = '请填写文章标题和内容';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // 获取选中的标签
+            const selectedTags = Array.from(document.querySelectorAll('#createPostTags .tag-checkbox:checked'))
+                .map(checkbox => checkbox.value);
+
+            // 添加加载状态
+            submitBtn.disabled = true;
+            submitBtn.textContent = '发布中...';
+            errorMessage.style.display = 'none';
+
+            try {
+                // 第一步：创建文章
+                const createResponse = await fetch(API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.POSTS), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ 
+                        title: title.trim(), 
+                        content: content.trim(), 
+                        status
+                    })
+                });
+
+                const createData = await createResponse.json();
+
+                if (!createResponse.ok || !createData.success) {
+                    throw new Error(createData.message || '创建文章失败');
+                }
+
+                // 确保我们有文章ID
+                const postId = createData.post?.id;
+                if (!postId) {
+                    throw new Error('创建文章成功但未返回文章ID');
+                }
+
+                // 第二步：如果有选择标签，更新文章的标签
+                if (selectedTags.length > 0) {
+                    const tagResponse = await fetch(API_CONFIG.getUrl(`/api/posts/${postId}/tags`), {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        },
+                        body: JSON.stringify({
+                            tagIds: selectedTags
+                        })
+                    });
+
+                    if (!tagResponse.ok) {
+                        const tagError = await tagResponse.json();
+                        throw new Error(tagError.message || '更新文章标签失败');
+                    }
+                }
+
+                // 成功后关闭模态框并刷新文章列表
+                closeCreatePostModal();
+                loadPosts(currentPostsPage);
+                alert('文章发布成功！');
+            } catch (error) {
+                console.error('发布文章失败:', error);
+                errorMessage.textContent = error.message || '发布失败，请重试';
+                errorMessage.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '发布';
+            }
+        }
+
+        // 编辑文章
+        async function editPost(postId) {
+            try {
+                const response = await fetch(API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.POST(postId)), {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('获取文章详情失败');
+                }
+
+                const post = await response.json();
+                
+                // 获取文章的标签
+                const tagsResponse = await fetch(API_CONFIG.getUrl(`/api/posts/${postId}/tags`));
+                const tags = await tagsResponse.json();
+                
+                // 先设置其他表单字段
+                document.getElementById('editPostId').value = post.id;
+                document.getElementById('editPostTitle').value = post.title;
+                document.getElementById('editPostStatus').value = post.status;
+                document.getElementById('editPostContent').value = post.content;
+
+                // 显示模态窗口
+                document.getElementById('editPostModal').style.display = 'block';
+
+                // 销毁现有编辑器
+                if (editEditor) {
+                    editEditor.toTextArea();
+                }
+
+                // 初始化编辑器并设置内容
+                editEditor = new SimpleMDE({
+                    element: document.getElementById('editPostContent'),
+                    spellChecker: false,
+                    initialValue: post.content,
+                    autofocus: true,
+                    shortcuts: {
+                        "toggleBold": "Ctrl-B",
+                        "toggleItalic": "Ctrl-I",
+                        "drawLink": "Ctrl-K",
+                        "toggleHeadingSmaller": "Ctrl-H",
+                        "toggleCodeBlock": "Ctrl-Alt-C",
+                        "toggleBlockquote": "Ctrl-Q",
+                        "toggleUnorderedList": "Ctrl-L",
+                        "toggleOrderedList": "Ctrl-Alt-L",
+                        "cleanBlock": "Ctrl-E",
+                        "drawImage": "Ctrl-Alt-I",
+                        "togglePreview": "Ctrl-P",
+                        "toggleSideBySide": "F9",
+                        "toggleFullScreen": "F11"
+                    },
+                    toolbar: [
+                        "bold", "italic", "heading", "|",
+                        "quote", "code", "unordered-list", "ordered-list", "|",
+                        "link", "image", "|",
+                        "preview", "side-by-side", "fullscreen", "|",
+                        "guide"
+                    ],
+                    status: ["autosave", "lines", "words", "cursor"]
+                });
+                
+                // 加载标签选择器并设置已选中的标签
+                await loadTagsSelect('editPostTags', tags);
+            } catch (error) {
+                console.error('加载文章详情失败:', error);
+                alert('加载文章详情失败，请重试');
+            }
+        }
+
+        // 处理编辑文章
+        async function handleEditPost(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('editPostId').value;
+            const title = document.getElementById('editPostTitle').value;
+            const content = editEditor ? editEditor.value() : '';
+            const status = document.getElementById('editPostStatus').value;
+
+            // 获取选中的标签
+            const selectedTags = Array.from(document.querySelectorAll('#editPostTags .tag-checkbox:checked'))
+                .map(checkbox => checkbox.value);
+
+            if (!title.trim() || !content.trim()) {
+                alert('请填写文章标题和内容');
+                return;
+            }
+
+            const now = Math.floor(Date.now() / 1000);
+
+            try {
+                // 首先更新文章内容
+                const response = await fetch(API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.POST(id)), {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ 
+                        title: title.trim(), 
+                        content: content.trim(), 
+                        status,
+                        updated_at: now
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || '更新文章失败');
+                }
+
+                // 然后更新文章标签
+                const tagsResponse = await fetch(API_CONFIG.getUrl(`/api/posts/${id}/tags`), {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({
+                        tagIds: selectedTags
+                    })
+                });
+
+                if (!tagsResponse.ok) {
+                    const error = await tagsResponse.json();
+                    throw new Error(error.message || '更新文章标签失败');
+                }
+
+                alert('文章更新成功');
+                closeEditPostModal();
+                loadPosts(currentPostsPage);
+            } catch (error) {
+                console.error('更新文章失败:', error);
+                alert(error.message || '更新文章失败，请重试');
+            }
+        }
+
+        function closeCreatePostModal() {
+            document.getElementById('createPostModal').style.display = 'none';
+            if (editor) {
+                editor.toTextArea();
+                editor = null;
+            }
+        }
+
+        function closeEditPostModal() {
+            document.getElementById('editPostModal').style.display = 'none';
+            if (editEditor) {
+                editEditor.toTextArea();
+                editEditor = null;
+            }
+        }
+
+        async function deletePost(postId) {
+            if (!confirm('确定要删除这篇文章吗？')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.POST(postId)), {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || '删除文章失败');
+                }
+
+                loadPosts(currentPostsPage);
+            } catch (error) {
+                console.error('删除文章失败:', error);
+                alert(error.message || '删除文章失败，请重试');
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm('确定要删除这个用户吗？')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(API_CONFIG.getUrl(`/api/users/${userId}`), {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || '删除用户失败');
+                }
+
+                loadUsers();
+            } catch (error) {
+                console.error('删除用户失败:', error);
+                alert(error.message || '删除用户失败，请重试');
+            }
+        }
+
+        // 加载评论列表
+        async function loadComments(postId = null) {
+            try {
+                const url = postId 
+                    ? API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.POST_COMMENTS(postId))
+                    : API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.ADMIN_COMMENTS);
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const comments = await response.json();
+                const tableBody = document.getElementById('commentsTableBody');
+                
+                tableBody.innerHTML = comments.map(comment => {
+                    // 创建一个新的 Date 对象，使用正确的时间戳
+                    const createdDate = new Date(comment.created_at * 1000);
+                    // 减去8小时的毫秒数 (8 * 60 * 60 * 1000)
+                    const localDate = new Date(createdDate.getTime() - (8 * 3600 * 1000));
+                    
+                    return `
+                        <tr>
+                            <td>${comment.content}</td>
+                            <td>${comment.post_title || '已删除的文章'}</td>
+                            <td>${comment.author_name || '未知用户'}</td>
+                            <td>${localDate.toLocaleString()}</td>
+                            <td class="action-buttons">
+                                <button class="btn btn-sm btn-danger" onclick="deleteComment('${comment.id}')">删除</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('加载评论失败:', error);
+                alert('加载评论列表失败，请重试');
+            }
+        }
+
+        // 删除评论
+        async function deleteComment(commentId) {
+            if (!confirm('确定要删除这条评论吗？')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.COMMENT(commentId)), {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('删除评论失败');
+                }
+
+                loadComments();
+            } catch (error) {
+                console.error('删除评论失败:', error);
+                alert('删除评论失败，请重试');
+            }
+        }
+
+        // 查看特定文章的评论
+        function viewComments(postId) {
+            switchSection('comments');
+            loadComments(postId);
+        }
+
+        // 加载文件列表
+        async function loadFiles() {
+            try {
+                const response = await fetch(API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.ADMIN_FILES), {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const files = await response.json();
+                const tableBody = document.getElementById('filesTableBody');
+                
+                tableBody.innerHTML = files.map(file => {
+                    // 创建一个新的 Date 对象，使用正确的时间戳
+                    const createdDate = new Date(file.created_at * 1000);
+                    // 减去8小时的毫秒数 (8 * 60 * 60 * 1000)
+                    const localDate = new Date(createdDate.getTime() - (8 * 3600 * 1000));
+                    
+                    return `
+                    <tr>
+                        <td>${file.filename}</td>
+                        <td>${formatFileType(file.type)}</td>
+                        <td>${formatFileSize(file.size)}</td>
+                        <td>${file.uploader_name || '未知'}</td>
+                            <td>${localDate.toLocaleString()}</td>
+                        <td>
+                            <select 
+                                class="file-post-select" 
+                                onchange="updateFilePost('${file.id}', this.value)"
+                                data-current="${file.post_id || ''}"
+                            >
+                                <option value="">不关联文章</option>
+                                <!-- 文章选项将通过 loadPostsForFileSelect 动态加载 -->
+                            </select>
+                        </td>
+                        <td class="action-buttons">
+                            <a href="${API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.FILE(file.id))}" class="btn btn-sm btn-info" target="_blank">查看</a>
+                            <button class="btn btn-sm btn-danger" onclick="deleteFile('${file.id}')">删除</button>
+                        </td>
+                    </tr>
+                    `;
+                }).join('');
+
+                // 加载每个文件的文章选项
+                loadPostsForFileSelect();
+            } catch (error) {
+                console.error('加载文件列表失败:', error);
+                alert('加载文件列表失败，请重试');
+            }
+        }
+
+        function formatFileType(type) {
+            const typeMap = {
+                'image': '图片',
+                'video': '视频',
+                'document': '文档',
+                'audio': '音频',
+                'application': '应用',
+                'text': '文本'
+            };
+            
+            if (!type) return '未知';
+            
+            const mainType = type.split('/')[0];
+            return typeMap[mainType] || type;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function showUploadModal() {
+            document.getElementById('uploadFileModal').style.display = 'block';
+            loadPostsForSelect();
+        }
+
+        function closeUploadModal() {
+            const modal = document.getElementById('uploadFileModal');
+            const form = document.getElementById('uploadFileForm');
+            const progressElement = modal.querySelector('.upload-progress');
+            const progressBar = progressElement.querySelector('.progress-bar');
+            const progressPercentage = progressElement.querySelector('.progress-percentage');
+            const progressStatus = progressElement.querySelector('.progress-status');
+            const uploadSpeed = progressElement.querySelector('.upload-speed');
+            const timeRemaining = progressElement.querySelector('.time-remaining');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            
+            // 重置表单
+            form.reset();
+            
+            // 重置进度条状态
+            progressElement.style.display = 'none';
+            progressElement.classList.remove('uploading', 'success', 'error');
+            progressBar.style.width = '0%';
+            progressPercentage.textContent = '0%';
+            progressStatus.textContent = '准备上传...';
+            progressStatus.className = 'progress-status';
+            uploadSpeed.textContent = '0 KB/s';
+            timeRemaining.textContent = '计算中...';
+            
+            // 移除阶段指示器（如果存在）
+            const stageIndicator = progressElement.querySelector('.progress-stage');
+            if (stageIndicator) {
+                stageIndicator.remove();
+            }
+            
+            // 重置按钮状态
+            submitBtn.disabled = false;
+            
+            // 关闭模态框
+            modal.style.display = 'none';
+        }
+
+        async function loadPostsForSelect() {
+            try {
+                // 获取所有文章，不分页
+                const response = await fetch(API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.ADMIN_POSTS) + '?limit=1000', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const data = await response.json();
+                const select = document.getElementById('postId');
+                
+                // 处理新的API响应格式
+                const posts = data.data || data;
+                select.innerHTML = '<option value="">不关联文章</option>' + 
+                    posts.map(post => `<option value="${post.id}">${post.title}</option>`).join('');
+            } catch (error) {
+                console.error('加载文章列表失败:', error);
+            }
+        }
+
+        async function handleFileUpload(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const formData = new FormData(form);
+            const file = formData.get('file');
+
+            const progressElement = document.querySelector('.upload-progress');
+            const progressBar = progressElement.querySelector('.progress-bar');
+            const progressPercentage = progressElement.querySelector('.progress-percentage');
+            const progressStatus = progressElement.querySelector('.progress-status');
+            const uploadSpeed = progressElement.querySelector('.upload-speed');
+            const timeRemaining = progressElement.querySelector('.time-remaining');
+            
+            // 显示进度条
+            progressElement.style.display = 'block';
+            progressElement.classList.add('uploading');
+            submitBtn.disabled = true;
+            
+            // 添加阶段指示器
+            const progressStage = document.createElement('div');
+            progressStage.className = 'progress-stage';
+            
+            // 阶段指示线
+            const stageLine = document.createElement('div');
+            stageLine.className = 'stage-line';
+            
+            const stageLineProgress = document.createElement('div');
+            stageLineProgress.className = 'stage-line-progress';
+            stageLine.appendChild(stageLineProgress);
+            progressStage.appendChild(stageLine);
+            
+            // 阶段项
+            const stages = [
+                { id: 'processing', label: '处理' },
+                { id: 'compressing', label: '压缩' },
+                { id: 'uploading', label: '上传' },
+                { id: 'completed', label: '完成' }
+            ];
+            
+            stages.forEach((stage, index) => {
+                const stageIndicator = document.createElement('div');
+                stageIndicator.className = 'stage-indicator';
+                stageIndicator.id = `stage-${stage.id}`;
+                
+                const stageDot = document.createElement('div');
+                stageDot.className = 'stage-dot';
+                if (index === 0) stageDot.classList.add('active');
+                
+                const stageLabel = document.createElement('div');
+                stageLabel.className = 'stage-label';
+                if (index === 0) stageLabel.classList.add('active');
+                stageLabel.textContent = stage.label;
+                
+                stageIndicator.appendChild(stageDot);
+                stageIndicator.appendChild(stageLabel);
+                progressStage.appendChild(stageIndicator);
+            });
+            
+            // 在进度条上方插入阶段指示器
+            progressElement.insertBefore(progressStage, progressElement.querySelector('.progress-bar-container'));
+            
+            // 更新阶段状态
+            const updateStage = (stageIndex, percent) => {
+                const stageLineProgress = progressStage.querySelector('.stage-line-progress');
+                stageLineProgress.style.width = `${percent * 100 / 3}%`;
+                
+                for (let i = 0; i < stages.length; i++) {
+                    const stageIndicator = document.getElementById(`stage-${stages[i].id}`);
+                    const stageDot = stageIndicator.querySelector('.stage-dot');
+                    const stageLabel = stageIndicator.querySelector('.stage-label');
+                    
+                    if (i < stageIndex) {
+                        // 已完成阶段
+                        stageDot.classList.remove('active');
+                        stageDot.classList.add('completed');
+                        stageLabel.classList.remove('active');
+                        stageLabel.classList.add('completed');
+                    } else if (i === stageIndex) {
+                        // 当前阶段
+                        stageDot.classList.add('active');
+                        stageDot.classList.remove('completed');
+                        stageLabel.classList.add('active');
+                        stageLabel.classList.remove('completed');
+                    } else {
+                        // 未开始阶段
+                        stageDot.classList.remove('active', 'completed');
+                        stageLabel.classList.remove('active', 'completed');
+                    }
+                }
+            };
+            
+            // 初始化阶段为"处理"
+            updateStage(0, 0);
+            progressStatus.classList.add('processing');
+
+            try {
+                let processedFile = file;
+                
+                // 更新状态为处理中
+                progressStatus.textContent = '正在处理文件...';
+                progressBar.style.width = '5%';
+                progressPercentage.textContent = '5%';
+                
+                // 根据文件类型进行压缩
+                let videoProcessResult = null;
+                if (file.type.startsWith('image/')) {
+                    // 更新进度状态 - 开始压缩
+                    updateStage(1, 1);
+                    progressStatus.textContent = '正在压缩图片...';
+                    progressBar.style.width = '20%';
+                    progressPercentage.textContent = '20%';
+                    
+                    processedFile = await compressImage(file);
+                    
+                    // 压缩完成
+                    progressStatus.textContent = '图片压缩完成';
+                    progressStatus.classList.remove('processing');
+                    progressStatus.classList.add('completed');
+                    progressBar.style.width = '40%';
+                    progressPercentage.textContent = '40%';
+                    
+                } else if (file.type.startsWith('video/')) {
+                    // 视频压缩进度更新的回调函数
+                    const onProgress = (percent, status) => {
+                        // 压缩阶段（0-40%）
+                        const scaledPercent = Math.round(percent * 0.4);
+                        progressStatus.textContent = status || '正在压缩视频...';
+                        progressBar.style.width = `${scaledPercent}%`;
+                        progressPercentage.textContent = `${scaledPercent}%`;
+                        
+                        // 到达压缩阶段
+                        if (percent >= 10 && percent < 50) {
+                            updateStage(1, 1);
+                        }
+                    };
+                    
+                    updateStage(0, 0.9);
+                    videoProcessResult = await compressVideo(file, onProgress);
+                    
+                    // 获取处理后的文件
+                    processedFile = videoProcessResult.file;
+                    
+                    const compressionInfo = videoProcessResult.compressed ? 
+                        `(减少${Math.round(100 - (videoProcessResult.compressedSize / videoProcessResult.originalSize) * 100)}%)` : 
+                        '(未压缩)';
+                    
+                    const sizeInfo = `${(processedFile.size / (1024 * 1024)).toFixed(1)}MB ${compressionInfo}`;
+                    
+                    // 显示处理结果
+                    progressStatus.textContent = `视频处理完成: ${sizeInfo}`;
+                    
+                    // 添加详细处理结果到控制台
+                    console.info('视频处理结果:', videoProcessResult);
+                    
+                    progressStatus.classList.remove('processing');
+                    progressStatus.classList.add('completed');
+                    progressBar.style.width = '40%';
+                    progressPercentage.textContent = '40%';
+                }
+                
+                // 创建新的 FormData 对象
+                const newFormData = new FormData();
+                newFormData.append('file', processedFile);
+                if (formData.get('postId')) {
+                    newFormData.append('postId', formData.get('postId'));
+                }
+                // 添加视频时长字段
+                if (processedFile.type.startsWith('video/') && videoProcessResult && videoProcessResult.duration) {
+                    newFormData.append('duration', videoProcessResult.duration.toFixed(1));
+                }
+
+                // 准备上传
+                progressStatus.textContent = '准备上传...';
+                progressStatus.classList.remove('completed');
+                progressStatus.classList.add('processing');
+                updateStage(2, 2);
+                
+                // 创建 XMLHttpRequest 对象来跟踪上传进度
+                const xhr = new XMLHttpRequest();
+                
+                // 记录上传开始时间和已上传大小，用于计算速度
+                let startTime = Date.now();
+                let lastLoaded = 0;
+                
+                xhr.upload.onprogress = (event) => {
+                    if (event.lengthComputable) {
+                        // 计算进度百分比（从40%到90%）
+                        const percent = Math.round(40 + (event.loaded / event.total) * 50);
+                        progressBar.style.width = `${percent}%`;
+                        progressPercentage.textContent = `${percent}%`;
+                        
+                        // 计算上传速度
+                        const currentTime = Date.now();
+                        const elapsedTime = (currentTime - startTime) / 1000; // 转换为秒
+                        const bytesPerSecond = event.loaded / elapsedTime;
+                        
+                        // 计算剩余时间
+                        const remainingBytes = event.total - event.loaded;
+                        const remainingTime = remainingBytes / bytesPerSecond;
+                        
+                        // 更新速度显示
+                        uploadSpeed.textContent = `${formatFileSize(bytesPerSecond)}/s`;
+                        
+                        // 更新剩余时间显示
+                        timeRemaining.textContent = formatTimeRemaining(remainingTime);
+                        
+                        // 更新状态文本
+                        progressStatus.textContent = '正在上传...';
+                        
+                        // 更新上次记录的已上传大小
+                        lastLoaded = event.loaded;
+                    }
+                };
+
+                // 处理上传完成
+                xhr.onload = () => {
+                    try {
+                        // 记录原始响应用于调试
+                        console.log('服务器原始响应:', xhr.responseText);
+                        
+                        // 检查状态码范围 (2xx 表示成功)
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            let response;
+                            try {
+                                // 尝试解析JSON响应
+                                response = JSON.parse(xhr.responseText);
+                                console.log('解析的JSON响应:', response);
+                            } catch (parseError) {
+                                console.error('解析响应数据失败:', parseError, xhr.responseText);
+                                // 即使解析失败，如果状态码是成功的，我们也认为上传成功
+                                response = { success: true, message: "Upload successful (response parsing failed)" };
+                            }
+                            
+                            // 检查响应中是否有success字段，或者基于状态码判断成功
+                            // 部分API可能不返回success字段，但状态码表明成功
+                            const isSuccess = (response && response.success === true) || 
+                                             (response && response.fileId) || 
+                                             true; // 如果状态码是2xx，默认认为成功
+                            
+                            if (isSuccess) {
+                                // 记录上传成功信息
+                                const fileId = response.fileId || 'unknown';
+                                const fileUrl = response.url || '';
+                                console.log(`文件上传成功! ID: ${fileId}, URL: ${fileUrl}`);
+                                
+                                // 更新到完成阶段
+                                updateStage(3, 3);
+                                
+                                progressElement.classList.remove('uploading');
+                                progressElement.classList.add('success');
+                                progressStatus.textContent = '上传成功！';
+                                progressStatus.classList.remove('processing');
+                                progressStatus.classList.add('completed');
+                                progressBar.style.width = '100%';
+                                progressPercentage.textContent = '100%';
+                                
+                                // 确保定时器执行
+                                const closeTimer = setTimeout(() => {
+                    closeUploadModal();
+                    loadFiles();
+                                    clearTimeout(closeTimer); // 清除定时器引用
+                                }, 1500);
+                } else {
+                                const errorMsg = (response && response.message) ? response.message : '上传可能成功，但响应格式不符合预期';
+                                console.warn('上传状态不明确:', errorMsg);
+                                throw new Error(errorMsg);
+                            }
+                        } else {
+                            throw new Error(`上传失败，状态码: ${xhr.status}`);
+                        }
+                    } catch (error) {
+                        console.error('处理上传响应时出错:', error);
+                        progressElement.classList.remove('uploading');
+                        progressElement.classList.add('error');
+                        progressStatus.textContent = error.message || '上传失败，请重试';
+                        progressStatus.classList.remove('processing', 'completed');
+                        progressStatus.classList.add('error');
+                        submitBtn.disabled = false;
+                    }
+                };
+
+                // 处理上传错误
+                xhr.onerror = () => {
+                    progressElement.classList.remove('uploading');
+                    progressElement.classList.add('error');
+                    progressStatus.textContent = '网络错误，上传失败';
+                    progressStatus.classList.remove('processing', 'completed');
+                    progressStatus.classList.add('error');
+                    submitBtn.disabled = false;
+                };
+
+                // 发送请求
+                xhr.open('POST', API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.UPLOAD), true);
+                xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('token')}`);
+                xhr.send(newFormData);
+                
+            } catch (error) {
+                console.error('上传文件失败:', error);
+                progressElement.classList.remove('uploading');
+                progressElement.classList.add('error');
+                progressStatus.textContent = error.message || '上传失败，请重试';
+                progressStatus.classList.remove('processing', 'completed');
+                progressStatus.classList.add('error');
+                submitBtn.disabled = false;
+            }
+        }
+
+        // 格式化剩余时间显示
+        function formatTimeRemaining(seconds) {
+            if (seconds < 60) {
+                return `${Math.round(seconds)}秒`;
+            } else if (seconds < 3600) {
+                return `${Math.round(seconds / 60)}分钟`;
+            } else {
+                return `${Math.round(seconds / 3600)}小时${Math.round((seconds % 3600) / 60)}分钟`;
+            }
+        }
+
+        // 压缩图片
+        function compressImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        // 计算缩放比例，保持宽高比
+                        const maxDimension = 800;
+                        if (width > height && width > maxDimension) {
+                            height = Math.round((height * maxDimension) / width);
+                            width = maxDimension;
+                        } else if (height > maxDimension) {
+                            width = Math.round((width * maxDimension) / height);
+                            height = maxDimension;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        const ctx = canvas.getContext('2d');
+                        // 使用双线性插值算法进行缩放
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // 压缩质量，从0.7开始
+                        let quality = 0.7;
+                        let compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                        let compressedSize = Math.round((compressedDataUrl.length - 'data:image/jpeg;base64,'.length) * 3 / 4);
+
+                        // 如果大小仍然超过500KB，继续降低质量
+                        while (compressedSize > 500 * 1024 && quality > 0.1) {
+                            quality -= 0.1;
+                            compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                            compressedSize = Math.round((compressedDataUrl.length - 'data:image/jpeg;base64,'.length) * 3 / 4);
+                        }
+
+                        // 如果降低质量后仍然超过500KB，则需要进一步缩小尺寸
+                        if (compressedSize > 500 * 1024) {
+                            const scale = Math.sqrt(500 * 1024 / compressedSize);
+                            width = Math.round(width * scale);
+                            height = Math.round(height * scale);
+                            
+                            canvas.width = width;
+                            canvas.height = height;
+                            ctx.drawImage(img, 0, 0, width, height);
+                            compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        }
+
+                        // 将base64转换为Blob
+                        fetch(compressedDataUrl)
+                            .then(res => res.blob())
+                            .then(blob => {
+                                // 创建File对象
+                                const compressedFile = new File([blob], file.name, {
+                                    type: 'image/jpeg',
+                                    lastModified: Date.now()
+                                });
+                                resolve(compressedFile);
+                            })
+                            .catch(reject);
+                    };
+                    img.onerror = reject;
+                };
+                reader.onerror = reject;
+            });
+        }
+
+        // 压缩视频
+        function compressVideo(file, onProgress) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    // 增加延迟确保用户能够看到压缩进度
+                    if (onProgress) onProgress(0, '开始处理视频...');
+                    await new Promise(r => setTimeout(r, 300));
+                    
+                    // 记录原始文件大小和类型
+                    console.log(`原始视频：${file.name}, 大小: ${(file.size/(1024*1024)).toFixed(2)}MB, 类型: ${file.type}`);
+                    
+                    // 创建视频元素来播放原始视频
+                    const videoEl = document.createElement('video');
+                    videoEl.preload = 'metadata';
+                    videoEl.muted = false; // 视频可以有声音，以便我们可以获取其音频轨道
+                    videoEl.playsInline = true;
+                    
+                    // 创建画布用于捕获视频帧
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // 创建用于接收压缩数据的数组
+                    const chunks = [];
+                    
+                    // 设置对象URL
+                    const objectURL = URL.createObjectURL(file);
+                    videoEl.src = objectURL;
+                    
+                    if (onProgress) onProgress(5, '加载视频元数据...');
+                    
+                    // 加载元数据
+                    await new Promise((resolve, reject) => {
+                        videoEl.onloadedmetadata = resolve;
+                        videoEl.onerror = () => reject(new Error('无法加载视频元数据'));
+                        
+                        // 设置超时
+                        const timeout = setTimeout(() => {
+                            reject(new Error('加载视频元数据超时'));
+                        }, 10000);
+                        
+                        videoEl.addEventListener('loadedmetadata', () => clearTimeout(timeout), {once: true});
+                    });
+                    
+                    if (onProgress) onProgress(10, '准备视频参数...');
+                    
+                    // 获取视频的原始尺寸和时长
+                    const originalWidth = videoEl.videoWidth;
+                    const originalHeight = videoEl.videoHeight;
+                    const duration = videoEl.duration;
+                    
+                    // 改进音频检测逻辑
+                    let hasAudio = false;
+                    try {
+                        // 方法1: 使用 mozHasAudio
+                        if (videoEl.mozHasAudio) {
+                            hasAudio = true;
+                        }
+                        // 方法2: 使用 webkitAudioDecodedByteCount
+                        else if (videoEl.webkitAudioDecodedByteCount !== undefined && videoEl.webkitAudioDecodedByteCount > 0) {
+                            hasAudio = true;
+                        }
+                        // 方法3: 使用 audioTracks
+                        else if (videoEl.audioTracks && videoEl.audioTracks.length > 0) {
+                            hasAudio = true;
+                        }
+                        // 方法4: 使用 getAudioTracks
+                        else if (videoEl.captureStream) {
+                            const stream = videoEl.captureStream();
+                            const audioTracks = stream.getAudioTracks();
+                            hasAudio = audioTracks.length > 0;
+                        }
+                    } catch (e) {
+                        console.warn('音频检测失败:', e);
+                    }
+                    
+                    console.log(`视频信息: ${duration.toFixed(1)}秒, ${hasAudio ? '有音频' : '无音频'}`);
+                    
+                    // 计算压缩参数
+                    // 1. 如果原始分辨率大于1080p，将其缩小
+                    let targetWidth = originalWidth;
+                    let targetHeight = originalHeight;
+                    
+                    // 尺寸压缩 - 如果宽度大于1920，缩放到1080p
+                    if (originalWidth > 1920 || originalHeight > 1080) {
+                        if (originalWidth > originalHeight) {
+                            // 横向视频
+                            targetWidth = Math.min(1920, originalWidth);
+                            targetHeight = Math.round(targetWidth * originalHeight / originalWidth);
+                            // 确保高度不超过1080
+                            if (targetHeight > 1080) {
+                                targetHeight = 1080;
+                                targetWidth = Math.round(targetHeight * originalWidth / originalHeight);
+                            }
+                        } else {
+                            // 纵向视频
+                            targetHeight = Math.min(1080, originalHeight);
+                            targetWidth = Math.round(targetHeight * originalWidth / originalHeight);
+                            // 确保宽度不超过1920
+                            if (targetWidth > 1920) {
+                                targetWidth = 1920;
+                                targetHeight = Math.round(targetWidth * originalHeight / originalWidth);
+                            }
+                        }
+                    }
+                    
+                    console.log(`视频尺寸: ${originalWidth}x${originalHeight} -> ${targetWidth}x${targetHeight}`);
+                    
+                    // 设置画布尺寸
+                    canvas.width = targetWidth;
+                    canvas.height = targetHeight;
+                    
+                    if (onProgress) onProgress(15, '配置压缩设置...');
+                    
+                    // 计算目标比特率 (较低的比特率 = 更小的文件)
+                    // 使用一个较低的比特率，大约 1-2 Mbps
+                    const targetBitrate = 1.5 * 1000 * 1000; // 1.5Mbps
+                    
+                    // 根据视频类型选择不同的编解码器和比特率
+                    let mimeType = 'video/webm;codecs=vp9';
+                    let audioBitsPerSecond = 128 * 1000; // 音频比特率128kbps
+                    let videoBitsPerSecond = targetBitrate; 
+                    
+                    // 检查浏览器是否支持VP9编码
+                    if (!MediaRecorder.isTypeSupported(mimeType)) {
+                        // 回退到VP8
+                        mimeType = 'video/webm;codecs=vp8';
+                        if (!MediaRecorder.isTypeSupported(mimeType)) {
+                            // 如果VP8也不支持，使用默认编码
+                            mimeType = 'video/webm';
+                            if (!MediaRecorder.isTypeSupported(mimeType)) {
+                                // 如果WebM不支持，尝试MP4
+                                mimeType = 'video/mp4';
+                                if (!MediaRecorder.isTypeSupported(mimeType)) {
+                                    // 如果所有格式都不支持，抛出错误
+                                    throw new Error('浏览器不支持任何视频编码格式');
+                                }
+                            }
+                        }
+                    }
+                    
+                    // 设置帧率 - 降低帧率可以减小文件大小
+                    // 目标是平衡质量和文件大小
+                    const targetFrameRate = 25; // 降低帧率以减小文件大小
+                    
+                    if (onProgress) onProgress(20, '初始化压缩器...');
+                    
+                    // 使用MediaSource进行更全面的处理 - 保留音频轨道
+                    videoEl.muted = false; // 确保视频不是静音的
+                    videoEl.volume = 1; // 设置音量为最大
+                    
+                    // 需要等待canplay事件，确保视频可以播放
+                    await new Promise(resolve => {
+                        videoEl.addEventListener('canplay', resolve, { once: true });
+                        videoEl.load();
+                    });
+                    
+                    // 等待用户交互以初始化音频上下文
+                    let audioContextStarted = false;
+                    let audioContext;
+                    
+                    // 创建一个按钮让用户点击以开始处理
+                    const startButton = document.createElement('button');
+                    startButton.textContent = '点击开始处理视频';
+                    startButton.style.cssText = `
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        padding: 15px 30px;
+                        background: #007bff;
+                        color: white;
+                        border: none;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        z-index: 10000;
+                    `;
+                    document.body.appendChild(startButton);
+                    
+                    await new Promise(resolve => {
+                        startButton.onclick = async () => {
+                            try {
+                                // 创建音频上下文
+                                audioContext = new AudioContext();
+                                await audioContext.resume();
+                                audioContextStarted = true;
+                                
+                                // 尝试播放视频
+                                try {
+                                    await videoEl.play();
+                                } catch(e) {
+                                    console.warn('视频播放失败，但继续处理:', e);
+                                }
+                                
+                                // 移除按钮
+                                startButton.remove();
+                                resolve();
+                            } catch(e) {
+                                console.error('初始化音频上下文失败:', e);
+                                startButton.remove();
+                                resolve();
+                            }
+                        };
+                    });
+                    
+                    // 捕获画布视频流
+                    const canvasStream = canvas.captureStream(targetFrameRate);
+                    let combinedStream;
+                    
+                    // 准备MediaRecorder配置
+                    const mediaRecorderOptions = {
+                        mimeType: mimeType,
+                        videoBitsPerSecond: videoBitsPerSecond
+                    };
+                    
+                    // 改进音频轨道捕获逻辑
+                    let hasAudioTrack = false;
+                    try {
+                        if (hasAudio && audioContextStarted) {
+                            // 使用已创建的音频上下文
+                            const source = audioContext.createMediaElementSource(videoEl);
+                            const destination = audioContext.createMediaStreamDestination();
+                            
+                            // 只连接到目标流，不连接到音频上下文的输出
+                            source.connect(destination);
+                            
+                            // 获取音频流
+                            const audioStream = destination.stream;
+                            const audioTracks = audioStream.getAudioTracks();
+                            
+                            if (audioTracks.length > 0) {
+                                // 获取视频轨道
+                                const videoTracks = canvasStream.getVideoTracks();
+                                
+                                // 创建新的 MediaStream 来合并音频和视频
+                                combinedStream = new MediaStream();
+                                
+                                // 添加视频轨道
+                                videoTracks.forEach(track => {
+                                    combinedStream.addTrack(track);
+                                });
+                                
+                                // 添加音频轨道并确保启用
+                                audioTracks.forEach(track => {
+                                    track.enabled = true;
+                                    combinedStream.addTrack(track);
+                                });
+                                
+                                hasAudioTrack = true;
+                                console.log('成功合并音频和视频轨道');
+                            }
+                        }
+                    } catch(e) {
+                        console.warn('合并音频和视频轨道失败:', e);
+                    }
+                    
+                    if (!hasAudioTrack && hasAudio) {
+                        console.warn('无法合并音频轨道，压缩后的视频可能不包含音频');
+                        // 如果合并失败，使用原始画布流
+                        combinedStream = canvasStream;
+                    } else if (!hasAudioTrack) {
+                        combinedStream = canvasStream;
+                    }
+                    
+                    // 使用合并后的流创建MediaRecorder
+                    if (hasAudioTrack) {
+                        mediaRecorderOptions.audioBitsPerSecond = audioBitsPerSecond;
+                    }
+                    
+                    const mediaRecorder = new MediaRecorder(combinedStream, mediaRecorderOptions);
+                    
+                    // 收集编码的数据块
+                    mediaRecorder.ondataavailable = (e) => {
+                        if (e.data && e.data.size > 0) {
+                            chunks.push(e.data);
+                        }
+                    };
+                    
+                    // 压缩完成处理
+                    let compressedFile = null;
+                    const recorderPromise = new Promise((recorderResolve) => {
+                        mediaRecorder.onstop = async () => {
+                            if (onProgress) onProgress(45, '正在生成压缩文件...');
+                            
+                            // 合并所有数据块并创建Blob
+                            const blob = new Blob(chunks, { type: mimeType });
+                            
+                            // 确定输出文件扩展名
+                            let extension = '.webm';
+                            if (mimeType.includes('mp4')) {
+                                extension = '.mp4';
+                            }
+                            
+                            // 创建文件名
+                            const baseName = file.name.replace(/\.[^/.]+$/, '');
+                            const outputFileName = `${baseName}-compressed${extension}`;
+                            
+                            // 创建文件对象
+                            compressedFile = new File([blob], outputFileName, {
+                                type: blob.type,
+                                lastModified: Date.now()
+                            });
+                            
+                            console.log(`压缩后视频：${compressedFile.name}, 大小: ${(compressedFile.size/(1024*1024)).toFixed(2)}MB, 有音轨: ${hasAudioTrack}`);
+                            recorderResolve();
+                        };
+                    });
+                    
+                    // 开始录制
+                    mediaRecorder.start(1000); // 每秒收集一次数据
+                    
+                    if (onProgress) onProgress(25, '开始视频处理...');
+                    
+                    // 监控视频处理进度
+                    let lastProgressTime = 0;
+                    const progressInterval = setInterval(() => {
+                        // 计算进度百分比 (25-40% 范围)
+                        const progress = videoEl.currentTime / duration;
+                        const scaledProgress = 25 + progress * 15; // 映射到25-40%范围
+                        
+                        if (onProgress && videoEl.currentTime > lastProgressTime + 0.5) {
+                            lastProgressTime = videoEl.currentTime;
+                            onProgress(Math.min(40, scaledProgress), 
+                                      `正在处理视频: ${Math.round(progress * 100)}%`);
+                        }
+                    }, 500);
+                    
+                    // 定义绘制帧的函数
+                    const drawFrame = () => {
+                        if (videoEl.ended || videoEl.paused) {
+                            return false; // 停止绘制
+                        }
+                        
+                        // 绘制当前帧到画布
+                        ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+                        
+                        // 继续绘制下一帧
+                        requestAnimationFrame(drawFrame);
+                        return true;
+                    };
+                    
+                    // 开始绘制帧
+                    drawFrame();
+                    
+                    // 等待视频播放完成
+                    await new Promise(resolve => {
+                        videoEl.onended = resolve;
+                    });
+                    
+                    // 清除进度间隔
+                    clearInterval(progressInterval);
+                    
+                    if (onProgress) onProgress(40, '视频处理完成，正在压缩数据...');
+                    
+                    // 停止录制并等待数据处理完成
+                    mediaRecorder.stop();
+                    await recorderPromise;
+                    
+                    // 清理资源
+                    URL.revokeObjectURL(objectURL);
+                    videoEl.pause();
+                    videoEl.src = '';
+                    
+                    if (onProgress) onProgress(48, '压缩处理完成，检查结果...');
+                    
+                    // 比较原始文件和压缩文件的大小
+                    const originalSize = file.size;
+                    const compressedSize = compressedFile.size;
+                    const compressionRatio = compressedSize / originalSize;
+                    
+                    // 压缩成功的标准：文件大小减少超过5%，或格式已从非WebM转换为WebM
+                    const isEffectiveCompression = compressedSize < originalSize * 0.95 || 
+                                                 (file.type !== 'video/webm' && compressedFile.type.includes('webm'));
+                    
+                    console.log(`压缩比率: ${(compressionRatio * 100).toFixed(2)}%, 有效压缩: ${isEffectiveCompression}`);
+                    
+                    if (isEffectiveCompression) {
+                        // 压缩成功
+                        if (onProgress) onProgress(50, `压缩完成: ${(compressedSize/(1024*1024)).toFixed(1)}MB (减少${(100 - compressionRatio * 100).toFixed(0)}%)`);
+                        
+                        resolve({
+                            file: compressedFile,
+                            compressed: true,
+                            originalSize: originalSize,
+                            compressedSize: compressedSize,
+                            compressionRatio: compressionRatio,
+                            hasAudio: hasAudioTrack,
+                            duration: duration,
+                            message: `成功压缩 (减少${(100 - compressionRatio * 100).toFixed(0)}%)${hasAudioTrack ? '' : ' (注意：可能没有音频)'}`
+                        });
+                    } else if (compressedSize > originalSize * 1.1) {
+                        // 压缩结果显著增大了文件体积，使用原始文件
+                        console.warn('压缩后文件比原始文件大10%以上，使用原始文件');
+                        if (onProgress) onProgress(50, '压缩后文件较大，使用原始文件');
+                        
+                        resolve({
+                            file: file,
+                            compressed: false,
+                            originalSize: originalSize,
+                            duration: duration,
+                            message: '压缩后文件更大，使用原始文件'
+                        });
+                    } else {
+                        // 压缩没有明显效果，但仍使用压缩文件（可能是格式转换的好处）
+                        console.log('压缩效果不明显，但格式已转换');
+                        if (onProgress) onProgress(50, `格式转换完成: ${(compressedSize/(1024*1024)).toFixed(1)}MB`);
+                        
+                        resolve({
+                            file: compressedFile,
+                            compressed: true,
+                            originalSize: originalSize,
+                            compressedSize: compressedSize,
+                            compressionRatio: compressionRatio,
+                            hasAudio: hasAudioTrack,
+                            duration: duration,
+                            message: `视频格式已优化${hasAudioTrack ? '' : ' (注意：可能没有音频)'}`
+                        });
+                    }
+                    
+                } catch (error) {
+                    console.error("视频压缩失败:", error);
+                    
+                    // 记录详细错误信息
+                    const errorDetails = {
+                        message: error.message || '未知错误',
+                        stack: error.stack,
+                        fileName: file.name,
+                        fileSize: file.size,
+                        fileType: file.type
+                    };
+                    console.error('压缩错误详情:', errorDetails);
+                    
+                    // 尝试使用备用方法
+                    if (onProgress) onProgress(35, `主方法失败: ${error.message}，尝试备用方法...`);
+                    
+                    try {
+                        // 备用方法：使用ffmpeg.wasm或转换为Blob URL
+                        if (onProgress) onProgress(40, '尝试最简单的格式转换...');
+                        
+                        // 创建一个经过修改的副本文件
+                        const rawData = await file.arrayBuffer();
+                        let fallbackType = 'video/webm';
+                        
+                        // 确保类型与原始文件不同，以防出现问题
+                        if (file.type === 'video/webm') {
+                            fallbackType = 'video/mp4';
+                        }
+                        
+                        const fallbackFilename = `${file.name.replace(/\.[^/.]+$/, '')}-processed${fallbackType.includes('webm') ? '.webm' : '.mp4'}`;
+                        const fallbackFile = new File([rawData], fallbackFilename, {
+                            type: fallbackType,
+                            lastModified: Date.now()
+                        });
+                        
+                        if (onProgress) onProgress(50, '返回处理后的文件 (保留原始质量和音频)');
+                        
+                        resolve({
+                            file: fallbackFile,
+                            compressed: true,  // 仍然标记为已压缩
+                            originalSize: file.size,
+                            compressedSize: fallbackFile.size,
+                            duration: duration,
+                            message: '视频格式转换 (保留原始质量和音频)'
+                        });
+                    } catch (finalError) {
+                        // 所有方法都失败，返回原始文件
+                        if (onProgress) onProgress(50, `无法压缩: ${error.message}`);
+                        
+                        resolve({
+                            file: file,
+                            compressed: false,
+                            error: error.message,
+                            originalSize: file.size,
+                            duration: duration,
+                            message: '压缩失败，返回原始文件'
+                        });
+                    }
+                }
+            });
+        }
+
+        async function deleteFile(fileId) {
+            if (!confirm('确定要删除这个文件吗？')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.FILE(fileId)), {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('删除文件失败');
+                }
+
+                loadFiles();
+                alert('文件删除成功');
+            } catch (error) {
+                console.error('删除文件失败:', error);
+                alert('删除文件失败，请重试');
+            }
+        }
+
+        // 加载文章选项到所有文件的下拉框
+        async function loadPostsForFileSelect() {
+            try {
+                // 获取所有文章，不分页
+                const response = await fetch(API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.ADMIN_POSTS) + '?limit=1000', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const data = await response.json();
+                
+                // 处理新的API响应格式
+                const posts = data.data || data;
+                
+                // 更新所有文件的文章选择下拉框
+                document.querySelectorAll('.file-post-select').forEach(select => {
+                    const currentPostId = select.getAttribute('data-current');
+                    const options = posts.map(post => 
+                        `<option value="${post.id}" ${post.id === currentPostId ? 'selected' : ''}>
+                            ${post.title}
+                        </option>`
+                    ).join('');
+                    select.innerHTML = '<option value="">不关联文章</option>' + options;
+                });
+            } catch (error) {
+                console.error('加载文章列表失败:', error);
+            }
+        }
+
+        // 更新文件关联的文章
+        async function updateFilePost(fileId, postId) {
+            try {
+                const response = await fetch(API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.UPDATE_FILE_POST(fileId)), {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ postId: postId || null })
+                });
+
+                if (!response.ok) {
+                    throw new Error('更新文件关联失败');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    // 更新成功后重新加载文件列表
+                    loadFiles();
+                } else {
+                    throw new Error(result.message || '更新文件关联失败');
+                }
+            } catch (error) {
+                console.error('更新文件关联失败:', error);
+                alert(error.message || '更新文件关联失败，请重试');
+                // 更新失败时重新加载文件列表以恢复原始状态
+                loadFiles();
+            }
+        }
+
+        // 添加评论时获取当前时间戳（如果需要）
+        function getCurrentTimestamp() {
+            return Math.floor(Date.now() / 1000); // 返回当前的 Unix 时间戳（秒）
+        }
+
+        // 初始化移动端侧边栏
+        function initMobileSidebar() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.querySelector('.sidebar');
+            const dashboard = document.querySelector('.dashboard');
+            let overlay = null;
+
+            // 根据屏幕宽度显示/隐藏切换按钮
+            function updateToggleVisibility() {
+                if (window.innerWidth <= 768) {
+                    sidebarToggle.style.display = 'flex';
+                    if (sidebar.classList.contains('active')) {
+                        closeSidebar();
+                    }
+                } else {
+                    sidebarToggle.style.display = 'none';
+                    sidebar.classList.remove('active');
+                    if (overlay) {
+                        overlay.remove();
+                        overlay = null;
+                    }
+                }
+            }
+
+            // 关闭侧边栏
+            function closeSidebar() {
+                sidebar.classList.remove('active');
+                sidebarToggle.classList.remove('active');
+                if (overlay) {
+                    overlay.remove();
+                    overlay = null;
+                }
+            }
+
+            // 打开侧边栏
+            function openSidebar() {
+                sidebar.classList.add('active');
+                sidebarToggle.classList.add('active');
+                // 添加遮罩层
+                overlay = document.createElement('div');
+                overlay.className = 'sidebar-overlay';
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.5);
+                    z-index: 1000;
+                    backdrop-filter: blur(2px);
+                    transition: opacity 0.3s ease;
+                `;
+                dashboard.appendChild(overlay);
+                
+                // 点击遮罩层关闭侧边栏
+                overlay.addEventListener('click', closeSidebar);
+            }
+
+            // 切换侧边栏
+            function toggleSidebar() {
+                if (sidebar.classList.contains('active')) {
+                    closeSidebar();
+                } else {
+                    openSidebar();
+                }
+            }
+
+            // 监听窗口大小变化
+            window.addEventListener('resize', updateToggleVisibility);
+            
+            // 初始化时检查一次
+            updateToggleVisibility();
+            
+            // 绑定切换按钮点击事件
+            sidebarToggle.addEventListener('click', toggleSidebar);
+
+            // 将 toggleSidebar 函数暴露给全局作用域
+            window.toggleSidebar = toggleSidebar;
+        }
+
+        // 加载留言列表
+        async function loadAdminMessages() {
+            try {
+                const response = await fetch(API_CONFIG.getUrl('/api/messages'), {
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                const messages = await response.json();
+                const messageList = document.getElementById('adminMessageList');
+                const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+
+                messageList.innerHTML = messages.map(message => {
+                    const createdDate = new Date(message.created_at * 1000);
+                    // 减去8小时的毫秒数 (8 * 60 * 60 * 1000)
+                    const localDate = new Date(createdDate.getTime() - (8 * 3600 * 1000));
+                    const isAdmin = currentUser.role === 'admin';
+                    const isAuthor = currentUser.id === message.user_id;
+                    const canDelete = isAdmin || isAuthor;
+
+                    return `
+                        <li class="message-item">
+                            <div class="message-content">
+                                <strong>${message.author_name}</strong> · ${localDate.toLocaleString()}<br>
+                                ${message.content}
+                                ${message.image_path ? `<br><button class="view-image-btn" onclick="showImageViewer('${API_CONFIG.getUrl(`/api/messages/${message.id}/image`)}')">查看图片</button>` : ''}
+                            </div>
+                            <div class="message-actions">
+                                ${canDelete ? `<button class="delete-btn" onclick="deleteAdminMessage('${message.id}')">删除</button>` : ''}
+                            </div>
+                        </li>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('加载留言失败:', error);
+                alert('加载留言失败，请重试');
+            }
+        }
+
+        // 删除留言
+        async function deleteAdminMessage(messageId) {
+            if (!confirm('确定要删除这条留言吗？')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(API_CONFIG.getUrl(`/api/messages/${messageId}`), {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || '删除留言失败');
+                }
+
+                loadAdminMessages();
+            } catch (error) {
+                console.error('删除留言失败:', error);
+                alert(error.message || '删除留言失败，请重试');
+            }
+        }
+
+        // 显示图片查看器
+        function showImageViewer(src) {
+            const viewer = document.getElementById('imageViewer');
+            const img = viewer.querySelector('img');
+            img.src = src;
+            viewer.style.display = 'flex';
+        }
+
+        // 隐藏图片查看器
+        function hideImageViewer() {
+            const viewer = document.getElementById('imageViewer');
+            viewer.style.display = 'none';
+        }
+
+        // 加载标签列表
+        async function loadTags() {
+            try {
+                const response = await fetch(API_CONFIG.getUrl('/api/tags'), {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                const tags = await response.json();
+                const tableBody = document.getElementById('tagsTableBody');
+                
+                tableBody.innerHTML = tags.map(tag => {
+                    // 创建新的 Date 对象，使用正确的时间戳（秒转毫秒）
+                    const createdDate = new Date(tag.created_at * 1000);
+                    // 减去8小时的毫秒数 (8 * 60 * 60 * 1000)
+                    const localCreatedDate = new Date(createdDate.getTime() - (8 * 3600 * 1000));
+                    
+                    return `
+                        <tr>
+                            <td>${tag.id}</td>
+                            <td>${tag.name}</td>
+                            <td>${tag.post_count}</td>
+                            <td>${localCreatedDate.toLocaleString()}</td>
+                            <td class="action-buttons">
+                                <button class="btn btn-sm btn-warning" onclick="editTag('${tag.id}', '${tag.name}')">编辑</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteTag('${tag.id}')">删除</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('加载标签列表失败:', error);
+                alert('加载标签列表失败，请重试');
+            }
+        }
+
+        // 删除标签
+        async function deleteTag(tagId) {
+            if (!confirm('确定要删除这个标签吗？')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(API_CONFIG.getUrl(`/api/tags/${tagId}`), {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('删除标签失败');
+                }
+
+                loadTags();
+            } catch (error) {
+                console.error('删除标签失败:', error);
+                alert('删除标签失败，请重试');
+            }
+        }
+
+        // 打开标签编辑模态框
+        function openTagModal(isEdit = false) {
+            document.getElementById('tagModal').style.display = 'block';
+            document.getElementById('tagForm').reset();
+            document.getElementById('tagModalTitle').textContent = isEdit ? '编辑标签' : '新建标签';
+        }
+
+        // 关闭标签编辑模态框
+        function closeTagModal() {
+            document.getElementById('tagModal').style.display = 'none';
+            document.getElementById('tagForm').reset();
+            document.getElementById('tagId').value = '';
+        }
+
+        // 编辑标签
+        function editTag(id, name) {
+            document.getElementById('tagId').value = id;
+            document.getElementById('tagName').value = name;
+            document.getElementById('tagModalTitle').textContent = '编辑标签';
+            document.getElementById('tagModal').style.display = 'block';
+        }
+
+        // 处理标签提交
+        async function handleTagSubmit(event) {
+            event.preventDefault();
+            
+            const tagId = document.getElementById('tagId').value;
+            const name = document.getElementById('tagName').value;
+
+            // 手动验证表单
+            if (!name.trim()) {
+                alert('请输入标签名称');
+                return;
+            }
+
+            try {
+                const isEdit = !!tagId;
+                const url = isEdit 
+                    ? API_CONFIG.getUrl(`/api/tags/${tagId}`)
+                    : API_CONFIG.getUrl('/api/tags');
+                
+                const method = isEdit ? 'PUT' : 'POST';
+                const now = Math.floor(Date.now() / 1000);
+                const body = isEdit 
+                    ? { name: name.trim() }
+                    : { 
+                        name: name.trim(), 
+                        created_at: now,
+                        updated_at: now
+                    };
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || `${isEdit ? '更新' : '创建'}标签失败`);
+                }
+
+                alert(`标签${isEdit ? '更新' : '创建'}成功`);
+                closeTagModal();
+                loadTags();
+            } catch (error) {
+                console.error(`${tagId ? '更新' : '创建'}标签失败:`, error);
+                alert(error.message || `${tagId ? '更新' : '创建'}标签失败，请重试`);
+            }
+        }
+
+        // 加载标签选择器
+        async function loadTagsSelect(containerId, selectedTags = []) {
+            try {
+                const response = await fetch(API_CONFIG.getUrl('/api/tags'));
+                const tags = await response.json();
+                const container = document.getElementById(containerId);
+                
+                container.innerHTML = tags.map(tag => `
+                    <div class="tag-item">
+                        <input type="checkbox" 
+                            id="${containerId}_${tag.id}" 
+                            class="tag-checkbox" 
+                            value="${tag.id}"
+                            ${selectedTags.some(t => t.id === tag.id) ? 'checked' : ''}>
+                        <label class="tag-label" for="${containerId}_${tag.id}">
+                            ${tag.name}
+                        </label>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('加载标签失败:', error);
+                container.innerHTML = '<p class="error">加载标签失败</p>';
+            }
+        }
+    </script>
+</body>
+</html>

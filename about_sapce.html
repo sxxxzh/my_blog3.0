@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>szhAo的个人主页</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <!-- Animate.css for cool animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- AOS (Animate On Scroll) library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Particles.js for background effects -->
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Anime.js for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --bg-color: #0a0a0a;
+            --text-color: #f5f5f5;
+            --accent-color: #fd79a8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        
+        .profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+            background: rgba(20, 20, 20, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .avatar-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin-bottom: 20px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid var(--primary-color);
+            box-shadow: 0 0 30px var(--primary-color);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            transform-style: preserve-3d;
+            perspective: 500px;
+        }
+        
+        .avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            filter: brightness(1.1) contrast(1.1);
+        }
+        
+        .avatar-container:hover {
+            box-shadow: 0 0 50px var(--accent-color), 0 0 25px var(--primary-color);
+            transform: scale(1.05);
+        }
+        
+        .avatar-container:hover .avatar {
+            transform: scale(1.1) translateZ(20px);
+            filter: brightness(1.2) contrast(1.1);
+        }
+        
+        .avatar-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            box-shadow: inset 0 0 20px rgba(108, 92, 231, 0.5);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .avatar-container:hover::after {
+            opacity: 1;
+        }
+        
+        .name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px rgba(253, 121, 168, 0.5);
+        }
+        
+        .tagline {
+            font-size: 1.3rem;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+        
+        .info-container {
+            display: none;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            font-size: 1.7rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+        }
+        
+        .social-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-100%);
+            transition: transform 0.4s ease;
+            border-radius: 50%;
+        }
+        
+        .social-link:hover {
+            transform: translateY(-10px) scale(1.1);
+            box-shadow: 0 15px 25px rgba(108, 92, 231, 0.6);
+        }
+        
+        .social-link:hover::before {
+            transform: translateY(0);
+        }
+        
+        .social-link i {
+            font-size: 1.7rem;
+            z-index: 2;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+        }
+        
+        .social-icon {
+            width: 32px;
+            height: 32px;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+            z-index: 2;
+            transition: transform 0.3s ease;
+        }
+        
+        .social-link:hover .social-icon {
+            transform: scale(1.2);
+        }
+        
+        /* 添加页面加载动画和入场动画样式 */
+        .loader-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+        
+        .loader {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            perspective: 800px;
+        }
+        
+        .loader-inner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+        
+        .loader-inner.one {
+            left: 0;
+            top: 0;
+            animation: rotate-one 1s linear infinite;
+            border-bottom: 5px solid var(--primary-color);
+        }
+        
+        .loader-inner.two {
+            right: 0;
+            top: 0;
+            animation: rotate-two 1s linear infinite;
+            border-right: 5px solid var(--accent-color);
+        }
+        
+        .loader-inner.three {
+            right: 0;
+            bottom: 0;
+            animation: rotate-three 1s linear infinite;
+            border-top: 5px solid var(--secondary-color);
+        }
+        
+        @keyframes rotate-one {
+            0% { transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg); }
+            100% { transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg); }
+        }
+        
+        @keyframes rotate-two {
+            0% { transform: rotateX(50deg) rotateY(10deg) rotateZ(0deg); }
+            100% { transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg); }
+        }
+        
+        @keyframes rotate-three {
+            0% { transform: rotateX(35deg) rotateY(55deg) rotateZ(0deg); }
+            100% { transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg); }
+        }
+        
+        .loader-text {
+            position: absolute;
+            bottom: 30px;
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+            text-align: center;
+        }
+        
+        .loader-text span {
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .loader-text span:nth-child(2) { animation-delay: 0.1s; }
+        .loader-text span:nth-child(3) { animation-delay: 0.2s; }
+        .loader-text span:nth-child(4) { animation-delay: 0.3s; }
+        .loader-text span:nth-child(5) { animation-delay: 0.4s; }
+        .loader-text span:nth-child(6) { animation-delay: 0.5s; }
+        .loader-text span:nth-child(7) { animation-delay: 0.6s; }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        .enter-button {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 40px;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 9998;
+            opacity: 0;
+            visibility: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        .enter-button:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.6);
+        }
+        
+        .enter-button.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .main-content {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+        
+        .main-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        #particles-js {
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+        
+        #particles-js.visible {
+            opacity: 1;
+        }
+        
+        body {
+            overflow: hidden; /* 初始隐藏滚动条 */
+        }
+        
+        body.loaded {
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        
+        /* 添加互动元素样式 */
+        .interactive-ball {
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            box-shadow: 0 0 20px rgba(108, 92, 231, 0.4);
+            z-index: 999;
+            transition: transform 0.1s ease-out;
+            opacity: 0;
+            cursor: grab;
+            user-select: none;
+        }
+        
+        .interactive-ball.visible {
+            opacity: 0.8;
+            animation: float 5s infinite ease-in-out;
+        }
+        
+        .interactive-ball:hover {
+            transform: scale(1.2);
+        }
+        
+        .interactive-ball:active {
+            cursor: grabbing;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .easter-egg {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(108, 92, 231, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 99;
+        }
+        
+        .easter-egg:hover {
+            transform: rotate(180deg);
+            background: rgba(108, 92, 231, 0.3);
+        }
+        
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        
+        .skill-item {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .skill-item::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(108, 92, 231, 0.2) 0%, transparent 70%);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: opacity 0.5s, transform 0.5s;
+            pointer-events: none;
+        }
+        
+        .skill-item:hover::before {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+
+        
+        /* 新增滚动展示样式 */
+        .scroll-indicator {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .scroll-indicator.visible {
+            opacity: 1;
+            animation: pulse-fade 2s infinite;
+        }
+        
+        .scroll-arrow {
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--accent-color);
+            border-left: none;
+            border-top: none;
+            transform: rotate(45deg);
+            margin-bottom: 10px;
+            animation: arrow-down 1.5s infinite;
+        }
+        
+        .scroll-text {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+        
+        @keyframes arrow-down {
+            0% { transform: rotate(45deg) translate(0, 0); }
+            50% { transform: rotate(45deg) translate(10px, 10px); }
+            100% { transform: rotate(45deg) translate(0, 0); }
+        }
+        
+        @keyframes pulse-fade {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+        
+        .scroll-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .timeline {
+            width: 100%;
+            position: relative;
+            margin: 60px 0;
+            padding: 30px 0;
+            overflow: hidden;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 0;
+            background: linear-gradient(to bottom, transparent, var(--primary-color), var(--accent-color), transparent);
+            transform: translateX(-50%);
+            border-radius: 2px;
+            box-shadow: 0 0 15px rgba(108, 92, 231, 0.5);
+            transition: height 1.5s ease-out;
+        }
+        
+        .timeline.animate::before {
+            height: 100%;
+        }
+        
+        .timeline-item {
+            width: 100%;
+            position: relative;
+            margin-bottom: 50px;
+            perspective: 1000px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .timeline-item.reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .timeline-item:nth-child(2) { transition-delay: 0.1s; }
+        .timeline-item:nth-child(3) { transition-delay: 0.2s; }
+        .timeline-item:nth-child(4) { transition-delay: 0.3s; }
+        .timeline-item:nth-child(5) { transition-delay: 0.4s; }
+        .timeline-item:nth-child(6) { transition-delay: 0.5s; }
+        
+        .timeline-content {
+            width: calc(50% - 50px);
+            padding: 25px;
+            background: rgba(20, 20, 20, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 0 0 15px rgba(108, 92, 231, 0.3);
+            position: relative;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            transform-style: preserve-3d;
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-content {
+            float: left;
+            transform: rotateY(5deg);
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content {
+            float: right;
+            transform: rotateY(-5deg);
+        }
+        
+        .timeline-content:hover {
+            transform: rotateY(0) scale(1.03) translateZ(10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 25px rgba(108, 92, 231, 0.5);
+            border-color: rgba(108, 92, 231, 0.4);
+        }
+        
+        .timeline-content::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--primary-color);
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-content::after {
+            right: -65px;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-content::after {
+            left: -65px;
+        }
+        
+        .timeline-content:hover::after {
+            transform: scale(1.2);
+            box-shadow: 0 0 20px var(--accent-color);
+        }
+        
+        .timeline-title {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+            font-weight: 600;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .timeline-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), transparent);
+            transition: width 0.5s ease;
+        }
+        
+        .timeline-content:hover .timeline-title::after {
+            width: 100%;
+        }
+        
+        .timeline-date {
+            display: inline-block;
+            font-size: 1rem;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            padding: 5px 15px;
+            background: rgba(108, 92, 231, 0.1);
+            border-radius: 20px;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .timeline-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .timeline-icon {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: rgba(20, 20, 20, 0.8);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+        
+        .timeline-item:nth-child(odd) .timeline-icon {
+            right: -25px;
+            top: 15px;
+        }
+        
+        .timeline-item:nth-child(even) .timeline-icon {
+            left: -25px;
+            top: 15px;
+        }
+        
+        .timeline-item:hover .timeline-icon {
+            transform: rotate(360deg);
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            cursor: pointer;
+            z-index: 3;
+            box-shadow: 0 0 10px var(--primary-color);
+            animation: pulse-dot 2s infinite;
+        }
+        
+        .timeline-dot.reveal {
+            opacity: 1;
+        }
+        
+        @keyframes pulse-dot {
+            0% { box-shadow: 0 0 0 0 rgba(108, 92, 231, 0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(108, 92, 231, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(108, 92, 231, 0); }
+        }
+        
+        .timeline-dot::after {
+            content: attr(data-year);
+            position: absolute;
+            white-space: nowrap;
+            font-size: 0.8rem;
+            color: var(--secondary-color);
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .timeline-dot:hover::after {
+            opacity: 1;
+        }
+        
+        .timeline-item.highlight .timeline-content {
+            transform: scale(1.05) translateZ(20px);
+            box-shadow: 0 0 30px rgba(108, 92, 231, 0.7);
+            border-color: var(--accent-color);
+            transition: all 0.3s ease;
+        }
+        
+        .timeline-progress {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 8px;
+            height: 0;
+            background: var(--accent-color);
+            transform: translateX(-50%);
+            z-index: 1;
+            border-radius: 4px;
+            transition: height 0.3s ease-out;
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+        
+        .timeline-year-marker {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+            background: rgba(20, 20, 20, 0.7);
+            padding: 5px 15px;
+            border-radius: 20px;
+            opacity: 0;
+            transition: all 0.5s ease;
+            pointer-events: none;
+        }
+        
+        .timeline-year-marker.active {
+            opacity: 1;
+        }
+        
+        .timeline-events-wrapper {
+            position: relative;
+            overflow: hidden;
+            padding-bottom: 50px;
+        }
+        
+        .clearfix::after {
+            content: '';
+            display: table;
+            clear: both;
+        }
+        
+        .parallax-section {
+            position: relative;
+            height: 250px;
+            overflow: hidden;
+            margin: 40px 0;
+            border-radius: 10px;
+        }
+        
+        .parallax-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 150%;
+            background-image: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            transform: translateY(0);
+            will-change: transform;
+        }
+        
+        .parallax-content {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            z-index: 1;
+        }
+        
+        .parallax-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .parallax-text {
+            font-size: 1.2rem;
+            max-width: 600px;
+            text-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+        }
+        
+        .floating-bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            animation: float-bubble 15s infinite ease-in-out;
+        }
+        
+        @keyframes float-bubble {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-50px, 50px); }
+            50% { transform: translate(50px, 100px); }
+            75% { transform: translate(100px, 50px); }
+        }
+        
+        .enter-button {
+            display: none; /* 隐藏进入按钮 */
+        }
+        
+        /* 球形UI样式 */
+        .floating-orb {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), rgba(108, 92, 231, 0.5));
+            box-shadow: 0 0 30px rgba(108, 92, 231, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+            z-index: 10;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            animation: none;
+            cursor: pointer;
+        }
+        
+        .floating-orb.visible {
+            opacity: 1;
+            transform: scale(1);
+            animation: float-around 25s infinite alternate ease-in-out;
+        }
+        
+        @keyframes float-around {
+            0% { transform: translate(0, 0) scale(1); }
+            10% { transform: translate(5vw, -3vh) scale(1.05); }
+            20% { transform: translate(-10vw, 5vh) scale(0.95); }
+            30% { transform: translate(7vw, 10vh) scale(1.02); }
+            40% { transform: translate(-5vw, -7vh) scale(0.98); }
+            50% { transform: translate(10vw, 5vh) scale(1.05); }
+            60% { transform: translate(-7vw, -10vh) scale(0.97); }
+            70% { transform: translate(3vw, 7vh) scale(1.03); }
+            80% { transform: translate(-8vw, -4vh) scale(0.96); }
+            90% { transform: translate(10vw, -6vh) scale(1.04); }
+            100% { transform: translate(-5vw, 8vh) scale(1); }
+        }
+        
+        /* 使每个球的动画延迟不同 */
+        .floating-orb:nth-child(2n) {
+            animation-delay: -5s;
+            animation-duration: 28s;
+        }
+        
+        .floating-orb:nth-child(3n) {
+            animation-delay: -10s;
+            animation-duration: 22s;
+        }
+        
+        .floating-orb:nth-child(5n) {
+            animation-delay: -15s;
+            animation-duration: 30s;
+        }
+        
+        .floating-orb:hover {
+            animation-play-state: paused;
+            z-index: 15;
+            box-shadow: 0 0 40px var(--accent-color), inset 0 0 25px rgba(255, 255, 255, 0.3);
+        }
+        
+        .floating-orb:hover .orb-content {
+            transform: scale(0.9);
+        }
+        
+        .floating-orb:hover .orb-icon i {
+            transform: scale(1.2);
+            color: var(--accent-color);
+        }
+        
+        .orb-content {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .orb-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .orb-icon i {
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+        
+        .orb-title {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .orb-text {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* 美化头像的悬停动画 */
+        .avatar-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin-bottom: 20px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid var(--primary-color);
+            box-shadow: 0 0 30px var(--primary-color);
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            transform-style: preserve-3d;
+            perspective: 500px;
+        }
+        
+        .avatar-container:hover {
+            box-shadow: 0 0 50px var(--accent-color), 0 0 25px var(--primary-color);
+            transform: scale(1.05);
+        }
+        
+        .avatar-container:hover .avatar {
+            transform: scale(1.1) translateZ(20px);
+            filter: brightness(1.2) contrast(1.1);
+        }
+        
+        .glow-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: transparent;
+            box-shadow: 0 0 40px var(--primary-color);
+            animation: pulse-glow 3s infinite alternate;
+        }
+        
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 20px var(--primary-color); }
+            100% { box-shadow: 0 0 50px var(--primary-color), 0 0 20px var(--accent-color); }
+        }
+        
+        /* 连线样式 */
+        .connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .connection-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+            height: 2px;
+            transform-origin: left center;
+            animation: fade-in-out 8s infinite ease-in-out;
+            opacity: 0.3;
+        }
+        
+        @keyframes fade-in-out {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* 隐藏原有信息卡片 */
+        .info-container, .skills-container, .hobby-section {
+            display: none;
+        }
+        
+        /* 设置欢迎部分样式 */
+        .welcome-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        /* 顶部信息卡片 */
+        .info-card {
+            display: none;
+        }
+        
+        /* 修改主容器样式 */
+        .profile {
+            background: transparent;
+            box-shadow: none;
+        }
+        
+        /* 添加空气泡点击后破开的动画效果 */
+        @keyframes bubble-burst {
+            0% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            20% { 
+                transform: scale(1.2);
+                opacity: 0.9;
+            }
+            50% { 
+                transform: scale(0.8);
+                opacity: 0.7;
+            }
+            100% { 
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+        
+        .burst {
+            position: fixed !important; /* 固定位置，不再受原来动画影响 */
+            animation: bubble-burst 0.5s forwards cubic-bezier(0.165, 0.84, 0.44, 1);
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: fixed;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.8), var(--primary-color));
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 20;
+        }
+        
+        /* 在迷你信息球装饰中添加empty-orb类 */
+        .floating-orb.empty-orb {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), rgba(108, 92, 231, 0.4));
+            box-shadow: 0 0 15px rgba(108, 92, 231, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+        
+        @keyframes bubble-burst {
+            0% { 
+                transform: scale(1);
+                opacity: 1;
+            }
+            20% { 
+                transform: scale(1.2);
+                opacity: 0.9;
+            }
+            50% { 
+                transform: scale(0.8);
+                opacity: 0.7;
+            }
+            100% { 
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+        
+        .burst {
+            position: fixed !important; /* 固定位置，不再受原来动画影响 */
+            animation: bubble-burst 0.5s forwards cubic-bezier(0.165, 0.84, 0.44, 1);
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: fixed;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.8), var(--primary-color));
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 20;
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载动画 -->
+    <div class="loader-wrapper">
+        <div class="loader">
+            <div class="loader-inner one"></div>
+            <div class="loader-inner two"></div>
+            <div class="loader-inner three"></div>
+        </div>
+        <div class="loader-text">
+            <span>正</span>
+            <span>在</span>
+            <span>加</span>
+            <span>载</span>
+            <span>精</span>
+            <span>彩</span>
+            <span>...</span>
+        </div>
+    </div>
+    
+    <!-- 滚动指示器 -->
+    <div class="scroll-indicator">
+        <div class="scroll-arrow"></div>
+        <span class="scroll-text">向下滚动查看更多</span>
+    </div>
+    
+    <!-- Particles background -->
+    <div id="particles-js"></div>
+    
+    <div class="container main-content">
+        <!-- 欢迎部分 -->
+        <section class="welcome-section">
+            <div class="avatar-container" data-aos="flip-left" data-aos-duration="1500">
+                <img src="./images/宇智波pdx.png" alt="szhAo的头像" class="avatar animate__animated animate__zoomIn">
+            </div>
+            
+            <h1 class="name animate__animated animate__pulse animate__infinite">szhAo</h1>
+            <p class="tagline" data-aos="fade-up">19岁 · 郑州轻工业大学 · 大二在读</p>
+            
+            <div class="typed-text-container" data-aos="fade-up" data-aos-delay="300">
+                <span class="typed-text"></span><span class="typed-cursor">|</span>
+            </div>
+        </section>
+        
+        <!-- 球形UI信息展示 -->
+        <div class="connections" id="connections"></div>
+        
+        <!-- 邮箱信息球 -->
+        <div class="floating-orb" style="width: 200px; height: 200px; top: 25%; left: 15%;" data-scroll-reveal>
+            <div class="glow-effect"></div>
+            <div class="orb-content">
+                <div class="orb-icon"><i class="fas fa-envelope"></i></div>
+                <div class="orb-title">邮箱</div>
+                <div class="orb-text">3172942140@qq.com</div>
+            </div>
+        </div>
+        
+        <!-- 手机信息球 -->
+        <div class="floating-orb" style="width: 140px; height: 140px; top: 40%; left: 75%;" data-scroll-reveal>
+            <div class="glow-effect"></div>
+            <div class="orb-content">
+                <div class="orb-icon"><i class="fas fa-mobile-alt"></i></div>
+                <div class="orb-title">手机</div>
+                <div class="orb-text">17703974967</div>
+            </div>
+        </div>
+        
+        <!-- 抖音信息球 -->
+        <div class="floating-orb" style="width: 160px; height: 160px; top: 65%; left: 20%;" data-scroll-reveal>
+            <div class="glow-effect"></div>
+            <div class="orb-content">
+                <div class="orb-icon"><i class="fab fa-tiktok"></i></div>
+                <div class="orb-title">抖音</div>
+                <div class="orb-text">点击访问我的抖音</div>
+                <a href="https://v.douyin.com/RXws15hsJa0/" target="_blank" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 10;"></a>
+            </div>
+        </div>
+        
+        <!-- Steam信息球 -->
+        <div class="floating-orb" style="width: 170px; height: 170px; top: 55%; left: 65%;" data-scroll-reveal>
+            <div class="glow-effect"></div>
+            <div class="orb-content">
+                <div class="orb-icon"><i class="fab fa-steam"></i></div>
+                <div class="orb-title">Steam</div>
+                <div class="orb-text">游戏时长: 1800+小时</div>
+                <a href="https://steamcommunity.com/profiles/76561199177439169/" target="_blank" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 10;"></a>
+            </div>
+        </div>
+        
+        <!-- 技能信息球 -->
+        <div class="floating-orb" style="width: 180px; height: 180px; top: 75%; left: 50%;" data-scroll-reveal>
+            <div class="glow-effect"></div>
+            <div class="orb-content">
+                <div class="orb-icon"><i class="fas fa-gamepad"></i></div>
+                <div class="orb-title">专长</div>
+                <div class="orb-text">FPS资深玩家<br>CS2精通</div>
+            </div>
+        </div>
+        
+        <!-- 迷你信息球装饰 -->
+        <div class="floating-orb empty-orb" style="width: 60px; height: 60px; top: 30%; left: 40%;" data-scroll-reveal>
+            <div class="orb-content"></div>
+        </div>
+        <div class="floating-orb empty-orb" style="width: 50px; height: 50px; top: 60%; left: 30%;" data-scroll-reveal>
+            <div class="orb-content"></div>
+        </div>
+        <div class="floating-orb empty-orb" style="width: 40px; height: 40px; top: 40%; left: 60%;" data-scroll-reveal>
+            <div class="orb-content"></div>
+        </div>
+        
+        <section class="timeline scroll-reveal">
+            <h2 class="hobby-title glow" style="margin-bottom: 60px; font-size: 2.2rem;">我的经历</h2>
+            
+            <div class="timeline-progress"></div>
+            <div class="timeline-year-marker">2020</div>
+            
+            <div class="timeline-events-wrapper">
+                <div class="timeline-item clearfix" data-aos="fade-right">
+                    <div class="timeline-content">
+                        <div class="timeline-icon"><i class="fas fa-gamepad"></i></div>
+                        <h3 class="timeline-title">开始CS:GO之旅</h3>
+                        <p class="timeline-date">2020年</p>
+                        <p class="timeline-description">初次接触CS:GO，被其战术性和团队协作所吸引。在游戏中探索各种武器和地图，开始了FPS游戏的精彩旅程。</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item clearfix" data-aos="fade-right">
+                    <div class="timeline-content">
+                        <div class="timeline-icon"><i class="fas fa-clock"></i></div>
+                        <h3 class="timeline-title">CS游戏时长突破1000小时</h3>
+                        <p class="timeline-date">2022年</p>
+                        <p class="timeline-description">技术不断提升，对游戏机制有了更深入的理解。掌握了各种高级战术和道具使用技巧，成为了一名经验丰富的CS玩家。</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item clearfix" data-aos="fade-left">
+                    <div class="timeline-content">
+                        <div class="timeline-icon"><i class="fas fa-rocket"></i></div>
+                        <h3 class="timeline-title">迎接CS2</h3>
+                        <p class="timeline-date">2023年</p>
+                        <p class="timeline-description">体验全新CS2，探索Source 2引擎带来的新可能。适应新的游戏机制和图形变化，继续在新版本中保持高水平的游戏表现。</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item clearfix" data-aos="fade-right">
+                    <div class="timeline-content">
+                        <div class="timeline-icon"><i class="fas fa-trophy"></i></div>
+                        <h3 class="timeline-title">游戏时长达到1800小时</h3>
+                        <p class="timeline-date">2025年</p>
+                        <p class="timeline-description">成为资深FPS玩家，在CS2中积累了丰富的经验和技巧。不断挑战自我，追求更高的游戏水平和排名成就。</p>
+                    </div>
+                </div>
+
+                <div class="timeline-dots" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%);">
+                    <div class="timeline-dot" data-year="2020" style="top: 16%;"></div>
+                    <div class="timeline-dot" data-year="2021" style="top: 32%;"></div>
+                    <div class="timeline-dot" data-year="2022" style="top: 48%;"></div>
+                    <div class="timeline-dot" data-year="2023" style="top: 64%;"></div>
+                    <div class="timeline-dot" data-year="2024" style="top: 80%;"></div>
+                    <div class="timeline-dot" data-year="2025" style="top: 96%;"></div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="scroll-reveal" style="margin: 50px 0;">
+            <div class="skills-container" style="border-left-color: var(--accent-color);">
+                <h3 class="skill-title">联系方式</h3>
+                <div class="skills-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                    <div class="skill-item" data-aos="zoom-in">
+                        <span class="skill-icon">📧</span>
+                        <span class="skill-name">邮箱</span>
+                        <p>3172942140@qq.com</p>
+                    </div>
+                    <div class="skill-item" data-aos="zoom-in" data-aos-delay="100">
+                        <span class="skill-icon">📱</span>
+                        <span class="skill-name">手机</span>
+                        <p>17703974967</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+
+
+    <!-- 彩蛋按钮 -->
+    <div class="easter-egg" title="点击有惊喜">🎁</div>
+
+    <!-- 互动小球 -->
+    <div class="interactive-ball"></div>
+
+    <!-- 彩带容器 -->
+    <div class="confetti-container"></div>
+    
+    <!-- AOS Init -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+    <script src="https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/index.min.js"></script>
+    <script>
+        // Initialize AOS animation library
+        AOS.init({
+            duration: 1200,
+            once: false
+        });
+        
+        // Initialize typed.js
+        var typed = new Typed('.typed-text', {
+            strings: [
+                "FPS资深玩家 💥",
+                "CS2游戏时长1800+小时 ⏱️",
+                "联系方式: 3172942140@qq.com 📧",
+                "手机号: 17703974967 📱",
+                "期待与您联系! 🤝"
+            ],
+            typeSpeed: 50,
+            backSpeed: 30,
+            backDelay: 2000,
+            loop: true,
+            showCursor: false
+        });
+        
+        // Initialize particles.js
+        particlesJS('particles-js', {
+            "particles": {
+                "number": {
+                    "value": 120,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#6c5ce7"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 4,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 4,
+                        "size_min": 0.3,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#a29bfe",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 3,
+                    "direction": "none",
+                    "random": true,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": true,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "window",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 200,
+                        "line_linked": {
+                            "opacity": 0.8
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 250,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 6
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+        
+        // 初始化页面加载和入场动画效果
+        document.addEventListener('DOMContentLoaded', function() {
+
+            
+            // 处理滚动显示元素
+            const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
+            const scrollIndicator = document.querySelector('.scroll-indicator');
+            
+            // 检查元素是否在视口中
+            function isElementInViewport(el) {
+                const rect = el.getBoundingClientRect();
+                return (
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.8
+                );
+            }
+            
+            // 检查并显示元素
+            function checkScroll() {
+                scrollRevealElements.forEach(element => {
+                    if (isElementInViewport(element)) {
+                        element.classList.add('visible');
+                    }
+                });
+                
+                // 如果滚动超过一定距离，隐藏滚动指示器
+                if (window.scrollY > 100) {
+                    scrollIndicator.classList.remove('visible');
+                } else {
+                    scrollIndicator.classList.add('visible');
+                }
+            }
+            
+            // 视差效果
+            const parallaxBg = document.querySelector('.parallax-bg');
+            
+            function updateParallax() {
+                const scrolled = window.scrollY;
+                const parallaxSection = document.querySelector('.parallax-section');
+                const sectionPos = parallaxSection.getBoundingClientRect().top + window.scrollY;
+                const offset = scrolled - sectionPos;
+                const speed = 0.5;
+                
+                if (offset > -window.innerHeight && offset < window.innerHeight) {
+                    parallaxBg.style.transform = `translateY(${offset * speed}px)`;
+                }
+            }
+            
+            // 监听滚动事件
+            window.addEventListener('scroll', function() {
+                checkScroll();
+                updateParallax();
+            });
+            
+
+            
+            // 互动小球
+            const ball = document.querySelector('.interactive-ball');
+            let isDragging = false;
+            let offsetX, offsetY;
+            
+            function showBall() {
+                ball.classList.add('visible');
+            }
+            
+            ball.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                offsetX = e.clientX - ball.getBoundingClientRect().left;
+                offsetY = e.clientY - ball.getBoundingClientRect().top;
+                ball.style.animation = 'none';
+                ball.style.cursor = 'grabbing';
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (isDragging) {
+                    ball.style.left = (e.clientX - offsetX) + 'px';
+                    ball.style.top = (e.clientY - offsetY) + 'px';
+                }
+            });
+            
+            document.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    ball.style.animation = 'float 5s infinite ease-in-out';
+                    ball.style.cursor = 'grab';
+                }
+            });
+            
+            // 技能卡片互动
+            const skillItems = document.querySelectorAll('.skill-item');
+            skillItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    this.classList.add('animate__animated', 'animate__pulse');
+                    setTimeout(() => {
+                        this.classList.remove('animate__animated', 'animate__pulse');
+                    }, 1000);
+                });
+            });
+            
+            // 彩蛋功能
+            const easterEgg = document.querySelector('.easter-egg');
+            let confetti;
+            
+            easterEgg.addEventListener('click', function() {
+                const confettiSettings = { 
+                    target: 'confetti-container',
+                    max: 150,
+                    size: 1.5,
+                    animate: true,
+                    props: ['circle', 'square', 'triangle', 'line'],
+                    colors: [[165, 104, 246], [230, 61, 135], [0, 199, 228], [253, 214, 126]],
+                    clock: 25,
+                    rotate: true
+                };
+                
+                if (!confetti) {
+                    confetti = new ConfettiGenerator(confettiSettings);
+                    confetti.render();
+                    
+                    setTimeout(() => {
+                        confetti.clear();
+                        confetti = null;
+                    }, 5000);
+                }
+            });
+            
+            // 生成连接线
+            function generateConnections() {
+                const orbs = document.querySelectorAll('.floating-orb');
+                const connectionsContainer = document.getElementById('connections');
+                
+                if (!connectionsContainer) return;
+                
+                // 清空现有连接
+                connectionsContainer.innerHTML = '';
+                
+                // 为每个球体创建与其他球体的连接
+                for (let i = 0; i < orbs.length; i++) {
+                    for (let j = i + 1; j < orbs.length; j++) {
+                        const orb1 = orbs[i].getBoundingClientRect();
+                        const orb2 = orbs[j].getBoundingClientRect();
+                        
+                        // 计算连接线的长度和角度
+                        const x1 = orb1.left + orb1.width / 2;
+                        const y1 = orb1.top + orb1.height / 2;
+                        const x2 = orb2.left + orb2.width / 2;
+                        const y2 = orb2.top + orb2.height / 2;
+                        
+                        const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                        const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+                        
+                        // 创建连接线
+                        const line = document.createElement('div');
+                        line.className = 'connection-line';
+                        line.style.width = `${length}px`;
+                        line.style.left = `${x1}px`;
+                        line.style.top = `${y1}px`;
+                        line.style.transform = `rotate(${angle}deg)`;
+                        
+                        // 随机延迟动画
+                        line.style.animationDelay = `${Math.random() * 5}s`;
+                        
+                        connectionsContainer.appendChild(line);
+                    }
+                }
+            }
+            
+            // 显示球形UI元素
+            function revealOrbs() {
+                const orbs = document.querySelectorAll('[data-scroll-reveal]');
+                
+                orbs.forEach((orb, index) => {
+                    setTimeout(() => {
+                        orb.classList.add('visible');
+                        
+                        // 添加悬停事件监听
+                        orb.addEventListener('mouseenter', function() {
+                            // 获取当前计算样式
+                            const style = window.getComputedStyle(this);
+                            // 提取transform矩阵
+                            const matrix = new WebKitCSSMatrix(style.transform);
+                            // 应用缩放效果但保持当前位置
+                            this.style.transform = `translate(${matrix.m41}px, ${matrix.m42}px) scale(1.15)`;
+                        });
+                        
+                        // 鼠标离开时恢复动画
+                        orb.addEventListener('mouseleave', function() {
+                            this.style.transform = '';
+                        });
+                        
+                        // 如果是空气泡（没有内容的气泡），添加点击爆炸效果
+                        if (orb.classList.contains('empty-orb')) {
+                            orb.style.cursor = 'pointer';
+                            
+                            orb.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                
+                                // 获取气泡当前位置
+                                const rect = this.getBoundingClientRect();
+                                
+                                // 立即隐藏原始气泡
+                                this.style.opacity = '0';
+                                this.style.pointerEvents = 'none';
+                                
+                                // 创建一个克隆以在原位置爆炸
+                                const clone = this.cloneNode(true);
+                                document.body.appendChild(clone);
+                                
+                                // 设置克隆的样式为固定位置
+                                clone.style.position = 'fixed';
+                                clone.style.left = rect.left + 'px';
+                                clone.style.top = rect.top + 'px';
+                                clone.style.width = rect.width + 'px';
+                                clone.style.height = rect.height + 'px';
+                                clone.style.zIndex = '1000';
+                                clone.style.animation = 'none';
+                                clone.style.pointerEvents = 'none'; // 禁用鼠标事件
+                                
+                                // 为克隆添加爆炸效果
+                                clone.classList.add('burst');
+                                
+                                // 创建粒子爆炸效果
+                                createParticles(rect);
+                                
+                                // 动画结束后移除两个元素
+                                setTimeout(() => {
+                                    clone.remove();
+                                    this.remove();
+                                    // 重新生成连接线
+                                    generateConnections();
+                                }, 500);
+                            });
+                        }
+                        
+                    }, 300 * index); // 错开时间显示
+                });
+                
+                // 生成连接线
+                setTimeout(generateConnections, orbs.length * 300 + 100);
+            }
+            
+            // 创建粒子爆炸效果
+            function createParticles(rect) {
+                console.log("Creating particles at:", rect.left, rect.top);
+                
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                // 创建多个粒子
+                for (let i = 0; i < 20; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    document.body.appendChild(particle);
+                    
+                    // 随机大小
+                    const size = Math.random() * 8 + 4;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    // 初始位置在气泡中心
+                    particle.style.left = `${centerX}px`;
+                    particle.style.top = `${centerY}px`;
+                    
+                    // 随机方向和距离
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = Math.random() * 100 + 50;
+                    
+                    // 设置最终位置
+                    const duration = Math.random() * 1000 + 500;
+                    const finalX = centerX + Math.cos(angle) * distance;
+                    const finalY = centerY + Math.sin(angle) * distance;
+                    
+                    // 使用CSS动画
+                    particle.style.transition = `all ${duration}ms ease-out`;
+                    
+                    // 延迟一帧再应用效果
+                    requestAnimationFrame(() => {
+                        particle.style.left = `${finalX}px`;
+                        particle.style.top = `${finalY}px`;
+                        particle.style.opacity = '0';
+                    });
+                    
+                    // 完成后移除
+                    setTimeout(() => {
+                        particle.remove();
+                    }, duration);
+                }
+            }
+            
+            // 页面加载完成后
+            window.addEventListener('load', function() {
+                setTimeout(function() {
+                    // 隐藏加载动画
+                    document.querySelector('.loader-wrapper').style.opacity = '0';
+                    document.querySelector('.loader-wrapper').style.visibility = 'hidden';
+                    
+                    // 直接显示内容，无需点击按钮
+                    document.getElementById('particles-js').classList.add('visible');
+                    document.querySelector('.main-content').classList.add('visible');
+                    document.body.classList.add('loaded');
+                    
+                    // 显示滚动提示和互动元素
+                    setTimeout(() => {
+                        document.querySelector('.scroll-indicator').classList.add('visible');
+
+                        showBall();
+                        
+                        // 显示球形UI
+                        revealOrbs();
+                    }, 1000);
+                }, 2000);
+            });
+            
+            // 监听窗口大小变化，重新生成连接线
+            window.addEventListener('resize', function() {
+                if (document.querySelector('.floating-orb.visible')) {
+                    generateConnections();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

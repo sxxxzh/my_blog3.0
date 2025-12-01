@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工具集 - 个人博客</title>
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="stylesheet" href="/css/common.css">
+    <style>
+        .main-content {
+            max-width: 1200px;
+            margin: 6rem auto 2rem;
+            padding: 2rem;
+        }
+
+        .tools-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .tools-title {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .tools-description {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .tool-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .tool-card.external:hover::after {
+            content: '↗';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.2rem;
+            color: #3498db;
+        }
+
+        .tool-icon {
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+        }
+
+        .tool-content {
+            padding: 1.5rem;
+        }
+
+        .tool-name {
+            font-size: 1.25rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .tool-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .tool-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tool-tag {
+            background: #f0f2f5;
+            color: #666;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .tool-status {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(46, 204, 113, 0.9);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .tool-status.development {
+            background: rgba(241, 196, 15, 0.9);
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-top: 5rem;
+                padding: 1rem;
+            }
+
+            .tools-title {
+                font-size: 2rem;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                padding: 0.5rem;
+            }
+
+            .tool-icon {
+                height: 120px;
+                font-size: 2.5rem;
+            }
+        }
+
+        /* 工具卡片动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .tool-card {
+            animation: fadeInUp 0.5s ease backwards;
+        }
+
+        .tool-card:nth-child(1) { animation-delay: 0.1s; }
+        .tool-card:nth-child(2) { animation-delay: 0.2s; }
+        .tool-card:nth-child(3) { animation-delay: 0.3s; }
+        .tool-card:nth-child(4) { animation-delay: 0.4s; }
+        .tool-card:nth-child(5) { animation-delay: 0.5s; }
+        .tool-card:nth-child(6) { animation-delay: 0.6s; }
+
+        /* 工具图标渐变背景 */
+        .tool-icon.blue-gradient { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .tool-icon.green-gradient { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .tool-icon.purple-gradient { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+        .tool-icon.orange-gradient { background: linear-gradient(135deg, #e67e22, #d35400); }
+        .tool-icon.red-gradient { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .tool-icon.gray-gradient { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">szhAo-blog</a>
+            <button class="menu-toggle" aria-label="切换菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-links">
+                <a href="/">首页</a>
+                <a href="/tools.html" class="active">工具集</a>
+                <a href="/chat.html">聊天</a>
+                <a href="/message.html">留言</a>
+                <a href="/about.html">关于</a>
+            </div>
+            <div class="auth-buttons">
+                <button class="btn-outline" id="loginBtn">登录</button>
+                <button class="btn-primary" id="registerBtn">注册</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <header class="tools-header">
+            <h1 class="tools-title">实用工具集</h1>
+            <p class="tools-description">这里收集了一些我开发的实用工具，希望能帮助到你</p>
+        </header>
+
+        <div class="tools-grid">
+            <!-- 图片视频压缩工具 -->
+            <div class="tool-card" onclick="window.location.href='/tools/media-compressor.html'">
+                <div class="tool-icon blue-gradient">🎯</div>
+                <div class="tool-content">
+                    <h3 class="tool-name">图片视频压缩工具</h3>
+                    <p class="tool-description">支持图片和视频的智能压缩，保持最佳质量的同时大幅减小文件体积</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">图片压缩</span>
+                        <span class="tool-tag">视频压缩</span>
+                        <span class="tool-tag">在线工具</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 格式转换工具 -->
+            <div class="tool-card" onclick="window.location.href='/tools/format-converter.html'">
+                <div class="tool-icon purple-gradient">🔄</div>
+                <div class="tool-content">
+                    <h3 class="tool-name">媒体格式转换</h3>
+                    <p class="tool-description">支持常见图片格式(PNG/JPG/WebP等)和视频格式(MP4/WebM等)的相互转换</p>
+                    <div class="tool-tags">
+                        <span class="tool-tag">图片转换</span>
+                        <span class="tool-tag">视频转换</span>
+                        <span class="tool-tag">格式转换</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="/">首页</a> | 
+                <a href="/tools.html">工具集</a> |
+                <a href="/message.html">留言</a> |
+                <a href="/about.html">关于</a> | 
+                <span>© 2024 个人博客</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 检查用户登录状态
+        function checkAuthStatus() {
+            const token = localStorage.getItem('token');
+            const authButtons = document.querySelector('.auth-buttons');
+            
+            if (token) {
+                const user = JSON.parse(localStorage.getItem('user'));
+                const isMobile = window.innerWidth <= 768;
+                authButtons.innerHTML = `
+                    <span>${isMobile ? user.name : '欢迎，' + user.name}</span>
+                    <button class="btn btn-outline" onclick="logout()">退出</button>
+                `;
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.reload();
+        }
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthStatus();
+
+            // 监听窗口大小变化
+            window.addEventListener('resize', () => {
+                checkAuthStatus();
+            });
+
+            // 绑定登录按钮事件
+            document.getElementById('loginBtn')?.addEventListener('click', () => {
+                window.location.href = '/login.html';
+            });
+
+            // 绑定注册按钮事件
+            document.getElementById('registerBtn')?.addEventListener('click', () => {
+                window.location.href = '/register.html';
+            });
+
+            // 添加汉堡菜单点击事件
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            const authButtons = document.querySelector('.auth-buttons');
+            
+            menuToggle.addEventListener('click', () => {
+                menuToggle.classList.toggle('active');
+                navLinks.classList.toggle('active');
+                authButtons.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html> 

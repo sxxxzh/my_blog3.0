@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理页面跳转 - 个人博客</title>
+</head>
+<body>
+    <script>
+        // 检查管理员登录状态
+        function checkAdminAuth() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                // 设置提示消息
+                localStorage.setItem('loginMessage', '请登录后访问管理页面');
+                // 如果没有管理员token，重定向到登录页面
+                window.location.href = '/admin/login.html';
+                return;
+            }
+
+            // 检查token是否过期
+            try {
+                // 解析JWT token（简单检查格式）
+                const tokenParts = token.split('.');
+                if (tokenParts.length !== 3) {
+                    throw new Error('Invalid token format');
+                }
+
+                // 解码payload
+                const payload = JSON.parse(atob(tokenParts[1]));
+                
+                // 检查是否过期
+                if (payload.exp && payload.exp * 1000 < Date.now()) {
+                    // token已过期
+                    localStorage.removeItem('adminToken');
+                    localStorage.setItem('loginMessage', '登录已过期，请重新登录');
+                    window.location.href = '/admin/login.html';
+                    return;
+                }
+            } catch (error) {
+                // token解析失败，可能是无效的token
+                localStorage.removeItem('adminToken');
+                localStorage.setItem('loginMessage', '登录状态无效，请重新登录');
+                window.location.href = '/admin/login.html';
+                return;
+            }
+
+            // 如果有有效的token，重定向到管理控制台
+            window.location.href = '/admin/dashboard.html';
+        }
+
+        // 页面加载完成后立即执行检查
+        document.addEventListener('DOMContentLoaded', checkAdminAuth);
+    </script>
+</body>
+</html>

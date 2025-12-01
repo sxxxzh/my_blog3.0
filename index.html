@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人博客</title>
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="stylesheet" href="/css/common.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .main-content {
+            max-width: 1200px;
+            margin: 6rem auto 2rem;
+            padding: 0 1rem;
+        }
+
+        /* 加载动画容器 */
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+            width: 100%;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* 加载动画 */
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 错误提示样式 */
+        .error-message {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        /* 重新加载按钮样式 */
+        .reload-btn {
+            padding: 0.75rem 2rem;
+            background: transparent;
+            border: 2px solid #3498db;
+            color: #3498db;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+        }
+
+        .reload-btn:hover {
+            background: #3498db;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+        }
+        
+        /* 分页样式 */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+        
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background-color: white;
+            color: #333;
+            text-decoration: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .pagination-btn:hover {
+            background-color: #f8f9fa;
+            border-color: #007bff;
+            color: #007bff;
+        }
+        
+        .pagination-btn.active {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+        
+        .pagination-btn:disabled {
+            background-color: #f8f9fa;
+            border-color: #ddd;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .pagination-ellipsis {
+            padding: 8px 4px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .pagination-container {
+                margin: 20px 0;
+                gap: 4px;
+            }
+            
+            .pagination-btn {
+                padding: 6px 8px;
+                font-size: 12px;
+                min-width: 32px;
+            }
+        }
+
+        .reload-btn:active {
+            transform: translateY(0);
+        }
+
+        .reload-btn.loading {
+            pointer-events: none;
+            opacity: 0.8;
+            padding-left: 3rem;
+        }
+
+        .reload-btn.loading::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            width: 1.2rem;
+            height: 1.2rem;
+            margin-top: -0.6rem;
+            border: 2px solid;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: button-loading 0.8s linear infinite;
+        }
+
+        @keyframes button-loading {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 标签区域样式 */
+        .tags-section {
+            margin-bottom: 0;
+            animation: fadeIn 0.5s ease;
+            padding: 1rem;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .tag-item {
+            padding: 0.5rem 1rem;
+            background: #f8f9fa;
+            border-radius: 20px;
+            color: #3498db;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tag-item:hover {
+            background: #3498db;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+        }
+
+        .tag-item.active {
+            background: #3498db;
+            color: #fff;
+        }
+
+        .tag-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.1rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+
+        /* 文章卡片加载动画 */
+        .post-card {
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 第四代博客入口样式 */
+        .blog-entrance {
+            margin-bottom: 2rem;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .blog-entrance-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+            box-shadow: 0 6px 24px rgba(102, 126, 234, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blog-entrance-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(255,255,255,0.1) 100%);
+            pointer-events: none;
+        }
+
+        .blog-entrance h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 0.75rem 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .blog-entrance p {
+            font-size: 1rem;
+            margin: 0 0 1.25rem 0;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .blog-entrance-btn {
+            display: inline-block;
+            padding: 0.75rem 1.75rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .blog-entrance-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .blog-entrance-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .blog-entrance-container {
+                padding: 1.25rem;
+                margin: 0 0.5rem;
+            }
+
+            .blog-entrance h2 {
+                font-size: 1.3rem;
+            }
+
+            .blog-entrance p {
+                font-size: 0.95rem;
+            }
+
+            .blog-entrance-btn {
+                padding: 0.65rem 1.25rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .blog-entrance-container {
+                padding: 1rem;
+            }
+
+            .blog-entrance h2 {
+                font-size: 1.2rem;
+            }
+
+            .blog-entrance p {
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
+            }
+        }
+
+        .posts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .post-card {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            border-color: rgba(52, 152, 219, 0.2);
+        }
+
+        .post-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .post-card:hover::before {
+            opacity: 1;
+        }
+
+        .post-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: color 0.3s ease;
+        }
+
+        .post-card:hover .post-title {
+            color: #3498db;
+        }
+
+        .post-excerpt {
+            color: #666;
+            margin-bottom: 1.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            flex: 1;
+        }
+
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .post-tag {
+            font-size: 0.8rem;
+            padding: 0.2rem 0.8rem;
+            background: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .post-tag:hover {
+            background: #3498db;
+            color: #fff;
+        }
+
+        /* Markdown 预览样式 */
+        .post-excerpt img,
+        .post-excerpt code,
+        .post-excerpt pre {
+            display: none;
+        }
+
+        .post-excerpt p {
+            margin: 0;
+        }
+
+        .post-excerpt h1,
+        .post-excerpt h2,
+        .post-excerpt h3,
+        .post-excerpt h4,
+        .post-excerpt h5,
+        .post-excerpt h6 {
+            font-size: inherit;
+            margin: 0;
+            font-weight: normal;
+        }
+
+        .post-excerpt ul,
+        .post-excerpt ol {
+            margin: 0;
+            padding-left: 1.5em;
+        }
+
+        .post-excerpt blockquote {
+            margin: 0;
+            padding-left: 1em;
+            border-left: 2px solid #eee;
+            color: #666;
+        }
+
+        .post-excerpt a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .post-meta {
+            font-size: 0.875rem;
+            color: #95a5a6;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .post-author::before {
+            content: '👤';
+            font-size: 1rem;
+        }
+
+        .post-date {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .post-date::before {
+            content: '📅';
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin: 4rem auto 1.5rem;
+            }
+
+            .posts-container {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 1.5rem;
+                padding: 1rem 0.5rem;
+            }
+
+            .post-content {
+                padding: 1.25rem;
+            }
+
+            .post-title {
+                font-size: 1.15rem;
+                -webkit-line-clamp: 2;
+            }
+
+            .post-excerpt {
+                font-size: 0.9rem;
+                margin-bottom: 1.25rem;
+                -webkit-line-clamp: 2;
+            }
+
+            .tags-section {
+                padding: 1rem 0.5rem;
+            }
+
+            .tags-container {
+                padding: 1rem;
+            }
+
+            .tag-item {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                margin: 3.5rem auto 1rem;
+                padding: 0 0.5rem;
+            }
+
+            .posts-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .post-card {
+                border-radius: 8px;
+            }
+
+            .post-content {
+                padding: 1rem;
+            }
+
+            .post-title {
+                font-size: 1.1rem;
+            }
+
+            .post-meta {
+                flex-wrap: wrap;
+                gap: 0.75rem;
+                font-size: 0.8rem;
+            }
+
+            .tags-section {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .tags-container {
+                padding: 0.75rem;
+            }
+
+            .tag-item {
+                padding: 0.3rem 0.7rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+    <script src="/js/config.js"></script>
+    <script src="/js/common.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">szhAo-blog</a>
+            <button class="menu-toggle" aria-label="切换菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-links">
+                <a href="/">首页</a>
+                <a href="/tools.html" class="active">工具集</a>
+                <a href="/chat.html">聊天</a>
+                <a href="/message.html">留言</a>
+                <a href="/about.html">关于</a>
+            </div>
+            <div class="auth-buttons">
+                <button class="btn-outline" id="loginBtn">登录</button>
+                <button class="btn-primary" id="registerBtn">注册</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- 第四代博客入口 -->
+        <section class="blog-entrance">
+            <div class="blog-entrance-container">
+                <p>全新博客系统，更快更好的体验</p>
+                <a href="https://blog.szhaovo.cn" target="_blank" class="blog-entrance-btn">
+                    访问第四代博客
+                </a>
+            </div>
+        </section>
+
+        <section class="tags-section" id="tagsSection" style="display: none;">
+            <div class="tags-container" id="tagsContainer">
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                </div>
+            </div>
+        </section>
+
+        <div class="posts-container" id="postsContainer">
+            <div class="loading-container" id="loadingContainer">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+        
+        <!-- 分页组件 -->
+        <div id="paginationContainer" class="pagination-container" style="display: none;"></div>
+    </main>
+
+    <script>
+        // 检查用户登录状态
+        function checkAuthStatus() {
+            const token = localStorage.getItem('token');
+            const authButtons = document.querySelector('.auth-buttons');
+            if (!authButtons) return;
+
+            let user = null;
+            try {
+                const raw = localStorage.getItem('user');
+                user = raw ? JSON.parse(raw) : null;
+            } catch (e) {
+                user = null;
+            }
+
+            if (token && user && user.name) {
+                const isMobile = window.innerWidth <= 768;
+                authButtons.innerHTML = `
+                    <span>${isMobile ? user.name : '欢迎，' + user.name}</span>
+                    <button class="btn btn-outline" onclick="logout()">退出</button>
+                `;
+            } else {
+                authButtons.innerHTML = `
+                    <button id="loginBtn" class="btn btn-outline">登录</button>
+                    <button id="registerBtn" class="btn btn-primary">注册</button>
+                `;
+            }
+        }
+
+        // 处理 Markdown 预览文本
+        function createExcerpt(content, maxLength = 150) {
+            content = content.replace(/!\[.*?\]\(.*?\)/g, '');
+            content = content.replace(/```[\s\S]*?```/g, '');
+            content = content.replace(/`.*?`/g, '');
+            content = content.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1');
+            content = content.replace(/\n\s*\n/g, '\n');
+            
+            let html = marked.parse(content);
+            
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            let text = tempDiv.textContent || tempDiv.innerText;
+            
+            text = text.trim();
+            if (text.length > maxLength) {
+                text = text.substring(0, maxLength) + '...';
+            }
+            
+            return text;
+        }
+
+        // 加载标签
+        async function loadTags() {
+            const tagsSection = document.getElementById('tagsSection');
+            const tagsContainer = document.getElementById('tagsContainer');
+            
+            try {
+                const response = await fetch(API_CONFIG.getUrl('/api/tags'));
+                const tags = await response.json();
+                
+                if (tags.length > 0) {
+                    // 计算所有标签的文章总数
+                    const totalPostCount = tags.reduce((sum, tag) => sum + tag.post_count, 0);
+                    
+                    tagsSection.style.display = 'block';
+                    tagsContainer.innerHTML = `
+                        <div class="tag-item" data-id="all" onclick="filterPostsByTag('all')">
+                            全部
+                            <span class="tag-count">${totalPostCount}</span>
+                        </div>
+                        ${tags.map(tag => `
+                            <div class="tag-item" data-id="${tag.id}" onclick="filterPostsByTag('${tag.id}')">
+                                ${tag.name}
+                                <span class="tag-count">${tag.post_count}</span>
+                            </div>
+                        `).join('')}
+                    `;
+                }
+            } catch (error) {
+                console.error('加载标签失败:', error);
+                tagsContainer.innerHTML = `
+                    <div class="error-message">
+                        <p>加载标签失败，请稍后重试</p>
+                    </div>
+                    <button class="reload-btn" onclick="handleTagsReload(this)">重新加载</button>
+                `;
+            }
+        }
+
+        // 处理标签重新加载
+        async function handleTagsReload(button) {
+            button.classList.add('loading');
+            button.textContent = '加载中...';
+            
+            try {
+                await loadTags();
+            } catch (error) {
+                console.error('重新加载标签失败:', error);
+                button.classList.remove('loading');
+                button.textContent = '重新加载';
+            }
+        }
+
+        let currentPosts = [];
+        let selectedTagId = 'all';
+        let currentPage = 1;
+        let totalPages = 1;
+        let isLoading = false;
+        const pageSize = 6; // 每页显示的文章数量
+
+        // 加载文章列表
+        async function loadPosts(page = 1, tagId = 'all') {
+            if (isLoading) return;
+            isLoading = true;
+            
+            const postsContainer = document.getElementById('postsContainer');
+            const loadingContainer = document.getElementById('loadingContainer');
+            const paginationContainer = document.getElementById('paginationContainer');
+
+            try {
+                let apiUrl;
+                if (tagId === 'all') {
+                    apiUrl = `${API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.POSTS)}?page=${page}&limit=${pageSize}`;
+                } else {
+                    apiUrl = `${API_CONFIG.getUrl(`/api/tags/${tagId}/posts`)}?page=${page}&limit=${pageSize}`;
+                }
+                
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                if (data.data) {
+                    // 新的分页API响应格式
+                    currentPosts = data.data.map(post => ({
+                        ...post,
+                        tags: Array.isArray(post.tags) ? post.tags : []
+                    }));
+                    
+                    // 更新分页信息
+                    currentPage = data.pagination.page;
+                    totalPages = data.pagination.totalPages;
+                    
+                    // 移除加载动画
+                    if (loadingContainer) {
+                        loadingContainer.remove();
+                    }
+
+                    // 显示文章
+                    displayPosts();
+                    
+                    // 显示分页组件
+                    displayPagination();
+
+                    // 如果后端已附带 tags，则不再发起额外请求；否则回退逐篇获取
+                    const hasEmbeddedTags = currentPosts.every(p => Array.isArray(p.tags));
+                    if (!hasEmbeddedTags) {
+                        try {
+                            const tagMap = {};
+                            await Promise.all(currentPosts.map(async (post) => {
+                                try {
+                                    const res = await fetch(API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.POST_TAGS(post.id)));
+                                    const tags = await res.json();
+                                    tagMap[post.id] = Array.isArray(tags) ? tags : [];
+                                } catch (e) {
+                                    tagMap[post.id] = [];
+                                }
+                            }));
+
+                            currentPosts = currentPosts.map(post => ({
+                                ...post,
+                                tags: Array.isArray(post.tags) ? post.tags : (tagMap[post.id] || [])
+                            }));
+                        } catch (error) {
+                            console.error('加载文章标签失败:', error);
+                        }
+                    }
+                    displayPosts();
+                } else {
+                    // 兼容旧的API响应格式
+                    currentPosts = data.map(post => ({
+                        ...post,
+                        tags: [] // 初始化空标签数组
+                    }));
+                    
+                    if (loadingContainer) {
+                        loadingContainer.remove();
+                    }
+                    
+                    displayPosts();
+                }
+
+            } catch (error) {
+                console.error('加载文章失败:', error);
+                if (loadingContainer) {
+                    loadingContainer.innerHTML = `
+                        <div class="error-message">
+                            <p>加载失败，请稍后重试</p>
+                        </div>
+                        <button class="reload-btn" onclick="handleReload(this)">重新加载</button>
+                    `;
+                }
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        // 显示文章
+        function displayPosts() {
+            const postsContainer = document.getElementById('postsContainer');
+
+            // 创建文档片段
+            const fragment = document.createDocumentFragment();
+
+            // 检查是否有文章
+            if (currentPosts.length === 0) {
+                const noContentDiv = document.createElement('div');
+                noContentDiv.className = 'error-message';
+                noContentDiv.innerHTML = '<p>暂无相关文章</p>';
+                fragment.appendChild(noContentDiv);
+            } else {
+                currentPosts.forEach(post => {
+                    const postElement = document.createElement('article');
+                    postElement.className = 'post-card';
+                    postElement.onclick = () => window.location.href = `/post.html?id=${post.id}`;
+                    
+                    const createdDate = new Date(post.created_at * 1000);
+                    const localDate = new Date(createdDate.getTime() - (8 * 3600 * 1000));
+                    const excerpt = createExcerpt(post.content);
+                    
+                    postElement.innerHTML = `
+                        <div class="post-content">
+                            <h2 class="post-title">${post.title}</h2>
+                            ${post.tags && post.tags.length > 0 ? `
+                                <div class="post-tags">
+                                    ${post.tags.map(tag => `
+                                        <span class="post-tag">${tag.name}</span>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                            <p class="post-excerpt">${excerpt}</p>
+                            <div class="post-meta">
+                                <div class="post-author">
+                                    <span>${post.author_name}</span>
+                                </div>
+                                <div class="post-date">
+                                    <span>${localDate.toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    fragment.appendChild(postElement);
+                });
+            }
+
+            // 清空容器并添加新内容
+            postsContainer.innerHTML = '';
+            postsContainer.appendChild(fragment);
+
+            // 更新标签的激活状态
+            document.querySelectorAll('.tag-item').forEach(tag => {
+                tag.classList.toggle('active', tag.dataset.id === selectedTagId);
+            });
+        }
+        
+        // 显示分页组件
+        function displayPagination() {
+            const paginationContainer = document.getElementById('paginationContainer');
+            if (!paginationContainer || totalPages <= 1) {
+                if (paginationContainer) {
+                    paginationContainer.style.display = 'none';
+                }
+                return;
+            }
+            
+            paginationContainer.style.display = 'flex';
+            
+            let paginationHTML = '';
+            
+            // 上一页按钮
+            if (currentPage > 1) {
+                paginationHTML += `<button class="pagination-btn" onclick="changePage(${currentPage - 1})">&laquo; 上一页</button>`;
+            }
+            
+            // 页码按钮
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+            
+            if (startPage > 1) {
+                paginationHTML += `<button class="pagination-btn" onclick="changePage(1)">1</button>`;
+                if (startPage > 2) {
+                    paginationHTML += `<span class="pagination-ellipsis">...</span>`;
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const activeClass = i === currentPage ? ' active' : '';
+                paginationHTML += `<button class="pagination-btn${activeClass}" onclick="changePage(${i})">${i}</button>`;
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    paginationHTML += `<span class="pagination-ellipsis">...</span>`;
+                }
+                paginationHTML += `<button class="pagination-btn" onclick="changePage(${totalPages})">${totalPages}</button>`;
+            }
+            
+            // 下一页按钮
+            if (currentPage < totalPages) {
+                paginationHTML += `<button class="pagination-btn" onclick="changePage(${currentPage + 1})">下一页 &raquo;</button>`;
+            }
+            
+            paginationContainer.innerHTML = paginationHTML;
+        }
+        
+        // 切换页面
+        async function changePage(page) {
+            if (page === currentPage || isLoading) return;
+            
+            // 滚动到顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // 显示加载状态
+            const postsContainer = document.getElementById('postsContainer');
+            postsContainer.innerHTML = `
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                </div>
+            `;
+            
+            await loadPosts(page, selectedTagId);
+        }
+
+        // 根据标签筛选文章
+        async function filterPostsByTag(tagId) {
+            if (selectedTagId === tagId || isLoading) return;
+            
+            selectedTagId = tagId;
+            currentPage = 1; // 重置到第一页
+            
+            // 显示加载状态
+            const postsContainer = document.getElementById('postsContainer');
+            postsContainer.innerHTML = `
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                </div>
+            `;
+            
+            await loadPosts(1, tagId);
+        }
+
+        // 处理重新加载
+        async function handleReload(button) {
+            button.classList.add('loading');
+            button.textContent = '加载中...';
+            
+            try {
+                await loadPosts(currentPage, selectedTagId);
+            } catch (error) {
+                console.error('重新加载失败:', error);
+                button.classList.remove('loading');
+                button.textContent = '重新加载';
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.reload();
+        }
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthStatus();
+            loadTags();
+            loadPosts(1, 'all');
+
+            // 监听窗口大小变化
+            window.addEventListener('resize', () => {
+                checkAuthStatus();
+            });
+
+            // 绑定登录按钮事件
+            document.getElementById('loginBtn')?.addEventListener('click', () => {
+                window.location.href = '/login.html';
+            });
+
+            // 绑定注册按钮事件
+            document.getElementById('registerBtn')?.addEventListener('click', () => {
+                window.location.href = '/register.html';
+            });
+        });
+    </script>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="/">首页</a> | 
+                <a href="/message.html">留言</a> |
+                <a href="/about.html">关于</a> | 
+                <span>© 2024 个人博客</span>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 个人博客</title>
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="stylesheet" href="/css/common.css">
+    <!-- 预加载 Turnstile -->
+    <link rel="preconnect" href="https://challenges.cloudflare.com">
+    <link rel="dns-prefetch" href="https://challenges.cloudflare.com">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: 60px;
+        }
+
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .login-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.15);
+        }
+
+        .login-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.75rem;
+            color: #2c3e50;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .login-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .login-container:hover .login-title::after {
+            width: 100px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #34495e;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-group:focus-within label {
+            color: #3498db;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn.loading {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin: -10px 0 0 -10px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: button-loading-spinner 0.8s linear infinite;
+        }
+
+        @keyframes button-loading-spinner {
+            from {
+                transform: rotate(0turn);
+            }
+            to {
+                transform: rotate(1turn);
+            }
+        }
+
+        .error-message {
+            color: #e74c3c;
+            margin-top: 1rem;
+            text-align: center;
+            display: none;
+            padding: 0.75rem;
+            border-radius: 8px;
+            background-color: rgba(231, 76, 60, 0.1);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #7f8c8d;
+        }
+
+        .register-link a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .register-link a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: #3498db;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .register-link a:hover::after {
+            transform: scaleX(1);
+        }
+
+        /* 响应式布局 */
+        @media (max-width: 768px) {
+            .main-wrapper {
+                padding: 1rem;
+            }
+
+            .login-container {
+                padding: 1.5rem;
+            }
+
+            .login-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 1.25rem;
+                border-radius: 12px;
+            }
+
+            .form-group input {
+                padding: 0.6rem;
+            }
+
+            .btn {
+                padding: 0.6rem;
+            }
+        }
+
+        /* 加载动画 */
+        .form-loading {
+            position: relative;
+        }
+
+        .form-loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 16px;
+            z-index: 1000;
+        }
+
+        .form-loading::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 1001;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .turnstile-container {
+            display: flex;
+            justify-content: center;
+            min-height: 65px;
+        }
+        
+        .turnstile-container iframe {
+            margin: 0 auto;
+        }
+    </style>
+    <script src="/js/config.js"></script>
+    <script src="/js/common.js"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="nav-brand">szhAo-blog</a>
+            <button class="menu-toggle" aria-label="切换菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="nav-links">
+                <a href="/">首页</a>
+                <a href="/tools.html" class="active">工具集</a>
+                <a href="/chat.html">聊天</a>
+                <a href="/message.html">留言</a>
+                <a href="/about.html">关于</a>
+            </div>
+            <div class="auth-buttons">
+                <button class="btn-outline" id="loginBtn">登录</button>
+                <button class="btn-primary" id="registerBtn">注册</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <div class="login-container">
+            <h1 class="login-title">登录</h1>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="email">邮箱</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group turnstile-container">
+                    <div class="cf-turnstile" 
+                        data-sitekey="0x4AAAAAABCSh4bldl_KukA0" 
+                        data-theme="light"
+                        data-language="zh-CN"
+                        data-retry="auto"
+                        data-refresh-expired="true"
+                        data-callback="onTurnstileSuccess"
+                        data-error-callback="onTurnstileError">
+                    </div>
+                </div>
+                <button type="submit" class="btn">登录</button>
+                <div id="errorMessage" class="error-message"></div>
+            </form>
+            <div class="register-link">
+                还没有账号？<a href="/register.html">立即注册</a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="/">首页</a> | 
+                <a href="/message.html">留言</a> |
+                <a href="/about.html">关于</a> | 
+                <span>© 2024 个人博客</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        async function handleLogin(event) {
+            event.preventDefault();
+            const form = document.getElementById('loginForm');
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const errorMessage = document.getElementById('errorMessage');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // 获取 Turnstile token
+            const turnstileResponse = document.querySelector('[name="cf-turnstile-response"]')?.value;
+            if (!turnstileResponse) {
+                errorMessage.textContent = '请完成人机验证';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // 添加加载状态
+            form.classList.add('form-loading');
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            errorMessage.style.display = 'none';
+
+            try {
+                // 首先验证 Turnstile token
+                const verifyResponse = await fetch(API_CONFIG.getUrl('/api/verify-turnstile'), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ token: turnstileResponse })
+                });
+
+                const verifyData = await verifyResponse.json();
+                if (!verifyData.success) {
+                    errorMessage.textContent = '人机验证失败：' + (verifyData.error || '请重试');
+                    errorMessage.style.display = 'block';
+                    turnstile.reset();
+                    return;
+                }
+
+                // 验证通过后继续登录流程
+                const response = await fetch(API_CONFIG.getUrl(API_CONFIG.ENDPOINTS.LOGIN), {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        email, 
+                        password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // 保存token和用户信息
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // 检查是否有重定向URL
+                    const redirectUrl = localStorage.getItem('redirectUrl');
+                    if (redirectUrl) {
+                        localStorage.removeItem('redirectUrl');
+                        window.location.href = redirectUrl;
+                    } else {
+                        window.location.href = '/';
+                    }
+                } else {
+                    errorMessage.textContent = '登录失败：' + (data.message || '邮箱或密码错误');
+                    errorMessage.style.display = 'block';
+                    // 重置 Turnstile
+                    turnstile.reset();
+                }
+            } catch (error) {
+                console.error('登录请求失败:', error);
+                errorMessage.textContent = '登录失败：网络错误，请稍后重试';
+                errorMessage.style.display = 'block';
+                // 重置 Turnstile
+                turnstile.reset();
+            } finally {
+                // 移除加载状态
+                form.classList.remove('form-loading');
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }
+        }
+
+        // 检查用户登录状态
+        function checkAuthStatus() {
+            const token = localStorage.getItem('token');
+            const authButtons = document.querySelector('.auth-buttons');
+            
+            if (token) {
+                const user = JSON.parse(localStorage.getItem('user'));
+                const isMobile = window.innerWidth <= 768;
+                authButtons.innerHTML = `
+                    <span>${isMobile ? user.name : '欢迎，' + user.name}</span>
+                    <button class="btn btn-outline" onclick="logout()">退出</button>
+                `;
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.reload();
+        }
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthStatus();
+
+            // 监听窗口大小变化
+            window.addEventListener('resize', () => {
+                checkAuthStatus();
+            });
+
+            // 绑定登录按钮事件
+            document.getElementById('loginBtn')?.addEventListener('click', () => {
+                window.location.href = '/login.html';
+            });
+
+            // 绑定注册按钮事件
+            document.getElementById('registerBtn')?.addEventListener('click', () => {
+                window.location.href = '/register.html';
+            });
+
+            // 在页面加载完成后立即初始化 Turnstile
+            turnstile.ready(function() {
+                turnstile.render('.cf-turnstile', {
+                    sitekey: '0x4AAAAAABCSh4bldl_KukA0',
+                    theme: 'light',
+                    language: 'zh-CN',
+                    retry: 'auto',
+                    'refresh-expired': 'true',
+                    callback: onTurnstileSuccess,
+                    'error-callback': onTurnstileError
+                });
+            });
+        });
+
+        // 添加 Turnstile 回调函数
+        function onTurnstileSuccess(token) {
+            console.log('Turnstile 验证成功');
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function onTurnstileError() {
+            console.error('Turnstile 验证失败');
+            document.getElementById('errorMessage').textContent = '人机验证失败，请重试';
+            document.getElementById('errorMessage').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
