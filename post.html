@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js"></script>
     <script src="/js/config.js"></script>
     <script src="/js/common.js"></script>
-    <script src="/js/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
     <style>
         .main-content {
@@ -731,9 +731,8 @@
                 const localDate = new Date(createdDate.getTime() - (8 * 3600 * 1000));
                 document.getElementById('postMeta').textContent = `作者：${post.author_name} · ${localDate.toLocaleString()}`;
                 
-                const contentHtml = (typeof marked !== 'undefined' && typeof marked.parse === 'function')
-                    ? marked.parse(post.content)
-                    : post.content.replace(/\n/g, '<br>');
+                // 使用 marked 渲染 Markdown
+                const contentHtml = marked.parse(post.content);
                 const postContent = document.getElementById('postContent');
                 
                 // 先显示内容区域
