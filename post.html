@@ -731,7 +731,6 @@
                 const localDate = new Date(createdDate.getTime() - (8 * 3600 * 1000));
                 document.getElementById('postMeta').textContent = `作者：${post.author_name} · ${localDate.toLocaleString()}`;
                 
-                // 使用 marked 渲染 Markdown（无标记库时降级）
                 const contentHtml = (typeof marked !== 'undefined' && typeof marked.parse === 'function')
                     ? marked.parse(post.content)
                     : post.content.replace(/\n/g, '<br>');
